@@ -214,25 +214,24 @@ if ( !empty( $define_settings['UC_DBHOST'] ) && !empty( $define_settings['UC_DBU
 add_action( 'admin_menu', 'ucenter_add_menu_page' );
 
 function ucenter_add_menu_page() {
-		add_menu_page( 'Ucenter Setting', 'Ucenter', 'administrator', 'ucenter-integration', '' );
+		add_menu_page( 'Ucenter', __( 'Ucenter', 'ucenter' ), 'administrator', 'ucenter-integration', '' );
 
-		add_submenu_page( 'ucenter-integration', 'Introduction', 'Introduction', 'administrator', 'ucenter-integration', 'ucenter_submenu_introduction' );
+		add_submenu_page( 'ucenter-integration', __( 'Introduction', 'ucenter' ) , __( 'Introduction', 'ucenter' ), 'administrator', 'ucenter-integration', 'ucenter_submenu_introduction' );
 
-		add_submenu_page( 'ucenter-integration', 'Define Settings', 'Define Settings', 'administrator', 'define-settings', 'ucenter_submenu_define_settings' );
+		add_submenu_page( 'ucenter-integration', __( 'Define Settings', 'ucenter' ) , __( 'Define Settings', 'ucenter' ), 'administrator', 'define-settings', 'ucenter_submenu_define_settings' );
 
-		add_submenu_page( 'ucenter-integration', 'Integration Settings', 'Integration Settings', 'administrator', 'integration-settings', 'ucenter_submenu_integration_settings' );
+		add_submenu_page( 'ucenter-integration', __( 'Integration Settings', 'ucenter' ) , __( 'Integration Settings', 'ucenter' ), 'administrator', 'integration-settings', 'ucenter_submenu_integration_settings' );
 }
 
 function ucenter_submenu_introduction() {
 	$plugin_dir = basename( dirname( __FILE__ ) );
 	echo '<div class="wrap">';
 	echo '<h2>' . __( 'Ucenter Introduction', 'ucenter' ) . '</h2>';
-	_e( "<p>Ucenter Integration Plugin will help you integrate wordpress with ucenter supported platforms. If you find any bug, please email to nkucyd at gmail.com. Your help is appreciated. </p>
-	You should follow there steps to make plugin work well:<br>
-	1. Login ucenter to add wordpress as app. NOTICE: you should fill APP'S URL with http://yourdomain/wp-content/plugins/$plugin_dir<br>
-	2. Finish define setting accoding to ucenter.<br>
-	3. Change integration setting according to your preferrence.
-	", 'ucenter' );
+	_e( '<p>Ucenter Integration Plugin will help you integrate wordpress with ucenter supported platforms. If you find any bug, please email to nkucyd at gmail.com. Your help is appreciated. </p>', 'ucenter' );
+	_e( 'You should follow there steps to make plugin work well:', 'ucenter' );
+	printf( __( "<br>1. Login ucenter to add wordpress as app. NOTICE: you should fill APP'S URL with http://yourdomain/wp-content/plugins/%s<br>", 'ucenter' ), $plugin_dir );
+	_e( '2. Finish define setting accoding to ucenter.<br>', 'ucenter' );
+	_e( '3. Change integration setting according to your preferrence.', 'ucenter' );
 	echo '</div>';
 }
 
@@ -342,7 +341,7 @@ function ucenter_submenu_integration_settings() {
 	</table>
 
 	<p class="submit">
-	<input type="submit" name="Submit" value="<?php _e( 'Update Options', 'ucente' ) ?>" />
+	<input type="submit" name="Submit" value="<?php _e( 'Update Options', 'ucenter' ) ?>" />
 	</p>
 
 </form>
