@@ -138,4 +138,15 @@ function authcode( $string, $operation = 'DECODE', $key = '', $expiry = 0 ) {
 		return $keyc.str_replace( '=', '', base64_encode( $result ) );
 	}
 }
+
+function dstripslashes( $string ) {
+	if( is_array( $string ) ) {
+		foreach ( $string as $key => $val ) {
+			$string[$key] = dstripslashes( $val );
+		}
+	} else {
+		$string = stripslashes( $string );
+	}
+	return $string;
+}
 ?>
