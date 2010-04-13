@@ -355,16 +355,42 @@ class Ucenter_Integration {
 
 			add_submenu_page( 'ucenter-box', __( 'Integration Settings', 'ucenter' ) , __( 'Integration Settings', 'ucenter' ), 'administrator', 'ucenter-integration-settings', array( &$this, 'submenu_integration_settings' ) );
 
-			add_submenu_page( 'ucenter-box', __( 'Icon', 'ucenter' ) , __( 'Icon', 'ucenter' ), 'read', 'ucenter-user-icon', array( &$this, 'submenu_user_icon' ) );
+			add_submenu_page( 'ucenter-box', __( 'Customize Icon', 'ucenter' ) , __( 'Customize Icon', 'ucenter' ), 'read', 'ucenter-customize-icon', array( &$this, 'submenu_customize_icon' ) );
+
+			add_submenu_page( 'ucenter-box', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
 
 	}
 
-	function submenu_user_icon() {
+	function submenu_customize_icon() {
 		global $current_user;
 		wp_get_current_user();
+		echo '<div class=wrap>';
+		echo '<h2>' . __( 'Customize Icon', 'ucenter' ) . '</h2>';
 		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
+		$icons = array( 'big' => __( 'Big Icon', 'ucenter' ), 'middle' => __( 'Middle Icon', 'ucenter' ), 'small' => __( 'Small Icon', 'ucenter' ) );
+		echo '<div style="float:left;border-right: 2px dotted;width:220px;">';
+		foreach ( $icons as $size => $name ) {
+			if ( uc_check_avatar( $uid, $size ) > 0 ) {
+				printf( '<div style="margin:10px;">%s<br /><img src="%s/avatar.php?uid=%s&size=%s&random=%s" /></div>', $name, UC_API, $uid, $size, rand() );
+			}
+		}
+		echo '</div><div style="margin:10px;float:left">';
 		$html = uc_avatar( $uid );
 		echo $html;
+		echo '</div></div>';
+	}
+
+	function submenu_credit_exchange() {
+		global $current_user;
+		wp_get_current_user();
+		echo '<div class=wrap>';
+		echo '<h2>' . __( 'Credit Exchange', 'ucenter' ) . '</h2>';
+		delete_usermeta( $current_user->ID, 'credit' );
+		$credit = get_usermeta( $current_user->ID, 'credit' );
+		if ( empty( $credit ) ) 
+			$credit = 0;
+		echo 'Current Credits : ' . $credit;
+		echo '</div>';
 	}
 
 	function submenu_introduction() {
