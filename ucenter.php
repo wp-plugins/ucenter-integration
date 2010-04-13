@@ -135,7 +135,6 @@ class Ucenter_Integration {
 	}
 
 	function hack_core( $action = 'hack' ) {
-		$this->debug($action);
 		if ( is_writable( ABSPATH . WPINC ) ) {
 			$file_name = ABSPATH . WPINC . '/registration.php';
 			$handle = fopen( $file_name . '.php', 'w' );
