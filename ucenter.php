@@ -22,11 +22,11 @@ class Ucenter_Integration {
 	var $sync_login_cookie;
 	var $sync_logout_cookie;
 
-	function Ucenter_Integration () {
+	function Ucenter_Integration() {
 		__construct();
 	}
 
-	function __construct () {
+	function __construct() {
 		$define_settings = get_option( UCENTER_DEFINE_SETTING_NAME );
 		$integration_settings = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
@@ -134,7 +134,8 @@ class Ucenter_Integration {
 		}
 	}
 
-	function hack_core ( $action = 'hack' ) {
+	function hack_core( $action = 'hack' ) {
+		$this->debug($action);
 		if ( is_writable( ABSPATH . WPINC ) ) {
 			$file_name = ABSPATH . WPINC . '/registration.php';
 			$handle = fopen( $file_name . '.php', 'w' );
@@ -143,7 +144,7 @@ class Ucenter_Integration {
 				if ( false !== strpos( $line, 'function wp_create_user(' ) ) {
 					if ( $action == 'hack' && false === strpos( $line, 'ucenter' ) ) 
 						$line = trim( $line ) . '$success = apply_filters( "ucenter_register_user", $username, $password, $email ); if ( !$success ) return;' . "\n";
-					else
+					elseif ( $action == 'remove' )
 						$line = substr( $line, 0, strpos( $line, '{' ) + 1 ) . "\n";
 				}
 				fwrite( $handle, $line );
@@ -154,7 +155,7 @@ class Ucenter_Integration {
 		}
 	}
 
-	function deactivated_plugin ( $plugin ) {
+	function deactivated_plugin( $plugin ) {
 		if ( $plugin == plugin_basename(__FILE__) ) {
 			$this->hack_core( 'remove' );
 			delete_option( UCENTER_DEFINE_SETTING_NAME );
@@ -165,7 +166,7 @@ class Ucenter_Integration {
 		}
 	}
 
-	function load_dialect () {
+	function load_dialect() {
 		$plugin_dir = basename( dirname( __FILE__ ) );
 		load_plugin_textdomain( 'ucenter', 'wp-content/plugins/' . $plugin_dir, $plugin_dir . '/language' );
 	}
@@ -313,7 +314,7 @@ class Ucenter_Integration {
 		return $errors;
 	}
 
-	function ucenter_update_user( $error, $update, $user ) {
+	function update_user( $error, $update, $user ) {
 		if ( $update ) {
 			if ( $data = uc_get_user( $user->user_login ) ) {
 				$result = uc_user_edit( $user->user_login, '', $user->user_pass, $user->user_email, 1 );
@@ -429,9 +430,8 @@ class Ucenter_Integration {
 				$value = isset( $_POST[$post_option] ) ? trim( $_POST[$post_option] ) : false;
 				$options[$post_option] = $value;
 				if ( $post_option == 'hack_core' ) {
-					if ( $value ) {
+					if ( $value ) 
 						$this->hack_core();
-					}
 					else
 						$this->hack_core( 'remove' );
 				}
