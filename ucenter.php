@@ -27,8 +27,8 @@ class Ucenter_Integration {
 	}
 
 	function __construct() {
-		$define_settings = get_option( UCENTER_DEFINE_SETTING_NAME );
-		$integration_settings = get_option( UCENTER_INTEGRATION_SETTING_NAME );
+		$this->define_settings = get_option( UCENTER_DEFINE_SETTING_NAME );
+		$this->integration_settings = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
 		// Load dialect
 		add_action( 'init', array( &$this, 'load_dialect' ) );
@@ -46,50 +46,50 @@ class Ucenter_Integration {
 
 			require_once dirname( __FILE__ ) . '/config.php';
 			if( !defined( 'UC_KEY' ) ) return;
-			if ( empty( $this->integration_settings )) {
+			if ( empty( $this->define_settings )) {
 				if ( defined( 'UC_CONNECT' ) ) {
-					$this->integration_settings['UC_CONNECT'] = UC_CONNECT;
+					$this->define_settings['UC_CONNECT'] = UC_CONNECT;
 				}
 				if ( defined( 'UC_DBHOST' ) ) {
-					$this->integration_settings['UC_DBHOST'] = UC_DBHOST;
+					$this->define_settings['UC_DBHOST'] = UC_DBHOST;
 				}
 				if ( defined( 'UC_DBUSER' ) ) {
-					$this->integration_settings['UC_DBUSER'] = UC_DBUSER;
+					$this->define_settings['UC_DBUSER'] = UC_DBUSER;
 				}
 				if ( defined( 'UC_DBPW' ) ) {
-					$this->integration_settings['UC_DBPW'] = UC_DBPW;
+					$this->define_settings['UC_DBPW'] = UC_DBPW;
 				}
 				if ( defined( 'UC_DBNAME' ) ) {
-					$this->integration_settings['UC_DBNAME'] = UC_DBNAME;
+					$this->define_settings['UC_DBNAME'] = UC_DBNAME;
 				}
 				if ( defined( 'UC_DBCHARSET' ) ) {
-					$this->integration_settings['UC_DBCHARSET'] = UC_DBCHARSET;
+					$this->define_settings['UC_DBCHARSET'] = UC_DBCHARSET;
 				}
 				if ( defined( 'UC_DBTABLEPRE' ) ) {
-					$this->integration_settings['UC_DBTABLEPRE'] = UC_DBTABLEPRE;
+					$this->define_settings['UC_DBTABLEPRE'] = UC_DBTABLEPRE;
 				}
 				if ( defined( 'UC_DBCONNECT' ) ) {
-					$this->integration_settings['UC_DBCONNECT'] = UC_DBCONNECT;
+					$this->define_settings['UC_DBCONNECT'] = UC_DBCONNECT;
 				}
 				if ( defined( 'UC_KEY' ) ) {
-					$this->integration_settings['UC_KEY'] = UC_KEY;
+					$this->define_settings['UC_KEY'] = UC_KEY;
 				}
 				if ( defined( 'UC_API' ) ) {
-					$this->integration_settings['UC_API'] = UC_API;
+					$this->define_settings['UC_API'] = UC_API;
 				}
 				if ( defined( 'UC_CHARSET' ) ) {
-					$this->integration_settings['UC_CHARSET'] = UC_CHARSET;
+					$this->define_settings['UC_CHARSET'] = UC_CHARSET;
 				}
 				if ( defined( 'UC_IP' ) ) {
-					$this->integration_settings['UC_IP'] = UC_IP;
+					$this->define_settings['UC_IP'] = UC_IP;
 				}
 				if ( defined( 'UC_APPID' ) ) {
-					$this->integration_settings['UC_APPID'] = UC_APPID;
+					$this->define_settings['UC_APPID'] = UC_APPID;
 				}
 				if ( defined( 'UC_PPP' ) ) {
-					$this->integration_settings['UC_PPP'] = UC_PPP;
+					$this->define_settings['UC_PPP'] = UC_PPP;
 				}
-				update_option( UCENTER_DEFINE_SETTING_NAME, $this->integration_settings );
+				update_option( UCENTER_DEFINE_SETTING_NAME, $this->define_settings );
 			}
 
 			require_once dirname( __FILE__ ) . '/client/client.php';
@@ -185,7 +185,7 @@ class Ucenter_Integration {
 			}
 		}
 
-		if ( $integration_settings['hack_core'] && !is_writable( ABSPATH . WPINC ) ) {
+		if ( $this->integration_settings['hack_core'] && !is_writable( ABSPATH . WPINC ) ) {
 			echo "
 			<div class='updated'><p><strong>" . sprintf( __( 'Ucenter Integration: You have enabled hack core flag but %s is not writable.', 'ucenter' ), ABSPATH . WPINC ) . "</p></div>
 			";
@@ -240,7 +240,7 @@ class Ucenter_Integration {
 
 			} elseif ( !wp_check_password( $password, $userdata->user_pass, $userdata->ID ) ) {
 					// if user exists
-					if ( $this->integration_settings['override'] ) {
+					if ( $this->integration_settings['password_override'] ) {
 						// if override, update wordpress user's password to ucenter's password
 						 $userdata->user_pass = wp_hash_password( $password );
 						 $user_id = wp_update_user( get_object_vars( $userdata ) );
