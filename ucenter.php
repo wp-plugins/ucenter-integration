@@ -346,13 +346,25 @@ class Ucenter_Integration {
 	}
 
 	function add_menu_page() {
-			add_menu_page( 'Ucenter', __( 'Ucenter', 'ucenter' ), 'administrator', 'ucenter-integration', '' );
+			// add admin menu
+			add_menu_page( __( 'Ucenter', 'ucenter' ), __( 'Ucenter', 'ucenter' ), 'read', 'ucenter-box', '' );
 
-			add_submenu_page( 'ucenter-integration', __( 'Introduction', 'ucenter' ) , __( 'Introduction', 'ucenter' ), 'administrator', 'ucenter-integration', array( &$this, 'submenu_introduction' ) );
+			add_submenu_page( 'ucenter-box', __( 'Introduction', 'ucenter' ) , __( 'Introduction', 'ucenter' ), 'read', 'ucenter-box', array( &$this, 'submenu_introduction' ) );
 
-			add_submenu_page( 'ucenter-integration', __( 'Define Settings', 'ucenter' ) , __( 'Define Settings', 'ucenter' ), 'administrator', 'define-settings', array( &$this, 'submenu_define_settings' ) );
+			add_submenu_page( 'ucenter-box', __( 'Define Settings', 'ucenter' ) , __( 'Define Settings', 'ucenter' ), 'administrator', 'ucenter-define-settings', array( &$this, 'submenu_define_settings' ) );
 
-			add_submenu_page( 'ucenter-integration', __( 'Integration Settings', 'ucenter' ) , __( 'Integration Settings', 'ucenter' ), 'administrator', 'integration-settings', array( &$this, 'submenu_integration_settings' ) );
+			add_submenu_page( 'ucenter-box', __( 'Integration Settings', 'ucenter' ) , __( 'Integration Settings', 'ucenter' ), 'administrator', 'ucenter-integration-settings', array( &$this, 'submenu_integration_settings' ) );
+
+			add_submenu_page( 'ucenter-box', __( 'Icon', 'ucenter' ) , __( 'Icon', 'ucenter' ), 'read', 'ucenter-user-icon', array( &$this, 'submenu_user_icon' ) );
+
+	}
+
+	function submenu_user_icon() {
+		global $current_user;
+		wp_get_current_user();
+		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
+		$html = uc_avatar( $uid );
+		echo $html;
 	}
 
 	function submenu_introduction() {
