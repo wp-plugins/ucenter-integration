@@ -10,7 +10,7 @@ define( 'API_UPDATEHOSTS', 0 );
 define( 'API_UPDATEAPPS', 0 );
 define( 'API_UPDATECLIENT', 0 );
 define( 'API_UPDATECREDIT', 0 );
-define( 'API_GETCREDITSETTINGS', 0 );
+define( 'API_GETCREDITSETTINGS', 1 );
 define( 'API_UPDATECREDITSETTINGS', 0 );
 
 define( 'API_RETURN_SUCCEED', '1' );
@@ -18,6 +18,15 @@ define( 'API_RETURN_FAILED', '-1' );
 define( 'API_RETURN_FORBIDDEN', '-2' );
 
 error_reporting(0);
+
+function debug( $s ) {
+	$logfile = dirname( __FILE__ ) . '/api.log';
+	!file_exists( $logfile ) && @touch( $logfile );
+	$str = file_get_contents( $logfile );
+	$str = date( 'Y-m-d H:i:s' ) . "\n" . var_export( $s, true ) . "\n\n" . $str;
+	@file_put_contents( $logfile, $str );
+	unset( $str );
+}
 
 define( 'WP_ROOT', join( DIRECTORY_SEPARATOR, array_slice( explode( DIRECTORY_SEPARATOR, dirname( __FILE__ ) ), 0, -4 ) ) );
 define( 'UCENTER_ROOT', dirname( dirname( __FILE__ ) ) );
@@ -44,7 +53,7 @@ if ( empty( $get ) )
 elseif ( $timestamp - $get['time'] > 3600 )
 	exit( 'Authracation has expiried' );
 
-if ( in_array( $get['action'], array( 'test', 'deleteuser', 'updatepw', 'synlogin', 'synlogout' ) ) ) {
+if ( in_array( $get['action'], array( 'test', 'synlogin', 'synlogout', 'getcreditsettings', 'deleteuser' ) ) ) {
 	$post = xml_unserialize( file_get_contents( 'php://input' ) );
 	$uc_note = new uc_note();
 	exit( $uc_note->$get['action']( $get, $post ) );
@@ -56,19 +65,7 @@ class uc_note {
 	function test( $get, $post ) {
 		return API_RETURN_SUCCEED;
 	}
-
-	function deleteuser( $get, $post ) {
-		!API_DELETEUSER && exit( API_RETURN_FORBIDDEN );
-
-		exit( API_RETURN_SUCCEED );
-	}
 	
-	function updatepw( $get, $post ) {
-		!API_UPDATEPW && exit( API_RETURN_FORBIDDEN );
-
-		exit( API_RETURN_SUCCEED );
-	}
-
 	function synlogin( $get, $post ) {
 		!API_SYNLOGIN && exit( API_RETURN_FORBIDDEN );
 
@@ -87,6 +84,21 @@ class uc_note {
 		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');	
 		wp_clear_auth_cookie();
 	
+		exit( API_RETURN_SUCCEED );
+	}
+
+	function getcreditsettings( $get, $post ) {
+		!API_GETCREDITSETTINGS && exit( API_RETURN_FORBIDDEN );
+
+		$creditsettings = array();
+		$creditsettings[1] = array('a', 'b');
+
+		exit( uc_serialize($creditsettings) );
+	}
+
+	function deleteuser( $get, $post ) {
+		!API_DELETEUSER && exit( API_RETURN_FORBIDDEN );
+
 		exit( API_RETURN_SUCCEED );
 	}
 }
