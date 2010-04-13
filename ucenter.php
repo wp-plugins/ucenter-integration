@@ -19,6 +19,8 @@ define( 'UCENTER_INTEGRATION_SETTING_NAME', 'plugin_ucenter_integration_settings
 class Ucenter_Integration {
 	var $define_settings;
 	var $integration_settings;
+	var $sync_login_cookie;
+	var $sync_logout_cookie;
 
 	function Ucenter_Integration () {
 		__construct();
@@ -30,6 +32,7 @@ class Ucenter_Integration {
 
 		// Load dialect
 		add_action( 'init', array( &$this, 'load_dialect' ) );
+		add_action( 'init', array( &$this, 'clear_cookie' ) );
 		// Give notice
 		add_action( 'admin_notices', array( &$this, 'notices' ) );
 		// Add Admin menu for ucenter integration
@@ -98,11 +101,14 @@ class Ucenter_Integration {
 			// Echo sync login scripts to wp_head or admin_head
 			add_action( 'wp_head', array( &$this, 'sync_login' ) );
 			add_action( 'admin_head', array( &$this, 'sync_login' ) );
+			add_action( 'login_head', array( &$this, 'sync_login' ) );
 
 			// Add ucenter logout cookie
 			add_action( 'wp_logout', array( &$this, 'sync_logout_cookie' ) );
 
 			// Echo ucenter logout scripts
+			add_action( 'wp_head', array( &$this, 'sync_logout' ) );
+			add_action( 'admin_head', array( &$this, 'sync_logout' ) );
 			add_action( 'login_head', array( &$this, 'sync_logout' ) );
 
 			// Delete ucenter user when delete wordpress user
@@ -258,8 +264,9 @@ class Ucenter_Integration {
 	}
 
 	function sync_login() {
-		if ( !empty( $_COOKIE['sync_login'] ) ) {
-			echo stripcslashes( $_COOKIE['sync_login'] );
+		if ( !empty( $this->sync_login_cookie ) ) {
+			echo $this->sync_login_cookie;
+			$this->sync_login_cookie = '';
 		}
 	}
 
@@ -268,9 +275,17 @@ class Ucenter_Integration {
 	}
 
 	function sync_logout() {
-		if ( !empty( $_COOKIE['sync_logout'] ) ) {
-			echo stripcslashes( $_COOKIE['sync_logout'] );
+		if ( !empty( $this->sync_logout_cookie ) ) {
+			echo $this->sync_logout_cookie;
+			$this->sync_logout_cookie = '';
 		}
+	}
+
+	function clear_cookie() {
+		$this->sync_login_cookie = stripcslashes( $_COOKIE['sync_login'] );
+		$this->sync_logout_cookie = stripcslashes( $_COOKIE['sync_logout'] );
+		setcookie( 'sync_login', '', 0, '/' );
+		setcookie( 'sync_logout', '', 0, '/' );
 	}
 
 	function delete_user( $user_id ) {
