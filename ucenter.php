@@ -51,6 +51,8 @@ class Ucenter_Integration {
 		add_action( 'deactivated_plugin', array( &$this, 'deactivated_plugin' ) );
 		// Activate
 		add_action( 'activated_plugin', array( &$this, 'activated_plugin' ) );
+		// Load Jquery UI Tabs
+		add_action( 'admin_head', array( &$this, 'load_needed_files' ) );
 
 		if ( file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
 
@@ -132,6 +134,12 @@ class Ucenter_Integration {
 
 			// Update ucenter user when update wordpress user
 			add_action( 'user_profile_update_errors', array( &$this, 'update_user' ), 40, 3 );
+
+			// Use costomize icon
+			add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
+			
+			// Add Admin menu for ucenter integration
+			add_action( 'admin_menu', array( &$this, 'add_user_submenu_page' ) );
 		}
 	}
 
@@ -162,6 +170,35 @@ class Ucenter_Integration {
 			unlink( $file_name );
 			rename( $file_name . '.php', $file_name );
 		}
+	}
+
+	function load_needed_files() {
+	}
+
+	function get_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
+		$user_login = '';
+		if ( is_numeric($id_or_email) ) {
+			$id = (int) $id_or_email;
+			$user = get_userdata($id);
+			if ( $user )
+				$user_login = $user->user_login;
+		} elseif ( is_object($id_or_email) ) {
+			if ( isset($id_or_email->comment_type) && '' != $id_or_email->comment_type && 'comment' != $id_or_email->comment_type )
+				return false; // No avatar for pingbacks or trackbacks
+
+			if ( !empty($id_or_email->user_id) ) {
+				$id = (int) $id_or_email->user_id;
+				$user = get_userdata($id);
+				if ( $user)
+					$user_login = $user->user_login;
+			}                 
+		}
+		list( $uid, $_, $_ ) = uc_get_user( $user_login );
+		if ( uc_check_avatar( $uid, 'small' ) > 0 ) {
+			$src = UC_API . "/avatar.php?uid={$uid}&size=small&random=" . rand();
+			$avatar = "<img alt='{$alt}' src='{$src}' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";
+		}
+		return $avatar;
 	}
 
 	function deactivated_plugin( $plugin ) {
@@ -364,11 +401,13 @@ class Ucenter_Integration {
 			add_submenu_page( 'ucenter-box', __( 'Define Settings', 'ucenter' ) , __( 'Define Settings', 'ucenter' ), 'administrator', 'ucenter-define-settings', array( &$this, 'submenu_define_settings' ) );
 
 			add_submenu_page( 'ucenter-box', __( 'Integration Settings', 'ucenter' ) , __( 'Integration Settings', 'ucenter' ), 'administrator', 'ucenter-integration-settings', array( &$this, 'submenu_integration_settings' ) );
+	}
 
-			add_submenu_page( 'ucenter-box', __( 'Customize Icon', 'ucenter' ) , __( 'Customize Icon', 'ucenter' ), 'read', 'ucenter-customize-icon', array( &$this, 'submenu_customize_icon' ) );
+	function add_user_submenu_page() {
+			// add user submenu page
+			add_submenu_page( 'users.php', __( 'Customize Icon', 'ucenter' ) , __( 'Customize Icon', 'ucenter' ), 'read', 'ucenter-customize-icon', array( &$this, 'submenu_customize_icon' ) );
 
-			add_submenu_page( 'ucenter-box', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
-
+			add_submenu_page( 'users.php', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
 	}
 
 	function submenu_customize_icon() {
@@ -398,8 +437,22 @@ class Ucenter_Integration {
 		$credit = get_usermeta( $current_user->ID, 'ucenter_credit' );
 		if ( empty( $credit ) )
 			$credit = 0;
-		echo 'Current Credits : ' . $credit;
-		echo var_dump($this->integration_settings['ucenter_credit_exchange_setting']);
+		_e( 'Current Credits : ' );
+	       	echo $credit;
+		echo '
+			<div id="tabs">
+				<ul>
+					<li><a href="#tabs-1">1</a></li>
+					<li><a href="#tabs-2">2</a></li>
+				</ul>
+				<div id="tabs-1">
+					<p>tabs-1</p>
+				</div>
+				<div id="tabs-2">
+					<p>tabs-2</p>
+				</div>
+			</div>
+		';
 		echo '</div>';
 	}
 
