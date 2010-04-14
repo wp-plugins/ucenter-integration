@@ -104,7 +104,7 @@ class Ucenter_Integration {
 
 			require_once dirname( __FILE__ ) . '/client/client.php';
 			require_once( ABSPATH . WPINC . '/registration.php' );
-			
+
 			// Add ucenter authenticate
 			add_filter( 'authenticate', array( &$this, 'authenticate_username_password' ), 40, 3 );
 
@@ -129,7 +129,7 @@ class Ucenter_Integration {
 
 			// Add ucenter registration errors
 			add_filter( 'registration_errors', array( &$this, 'registration_errors' ), 10, 3 );
-			
+
 			// Update ucenter user when update wordpress user
 			add_action( 'user_profile_update_errors', array( &$this, 'update_user' ), 40, 3 );
 		}
@@ -151,7 +151,7 @@ class Ucenter_Integration {
 			$content = file( $file_name );
 			foreach ( $content as $line ) {
 				if ( false !== strpos( $line, 'function wp_create_user(' ) ) {
-					if ( $action == 'hack' && false === strpos( $line, 'ucenter' ) ) 
+					if ( $action == 'hack' && false === strpos( $line, 'ucenter' ) )
 						$line = trim( $line ) . '$success = apply_filters( "ucenter_register_user", $username, $password, $email ); if ( !$success ) return;' . "\n";
 					elseif ( $action == 'remove' )
 						$line = substr( $line, 0, strpos( $line, '{' ) + 1 ) . "\n";
@@ -396,10 +396,10 @@ class Ucenter_Integration {
 		echo '<div class=wrap>';
 		echo '<h2>' . __( 'Credit Exchange', 'ucenter' ) . '</h2>';
 		$credit = get_usermeta( $current_user->ID, 'ucenter_credit' );
-		if ( empty( $credit ) ) 
+		if ( empty( $credit ) )
 			$credit = 0;
 		echo 'Current Credits : ' . $credit;
-		echo $this->integration_settings['ucenter_credit_exchange_setting'];
+		echo var_dump($this->integration_settings['ucenter_credit_exchange_setting']);
 		echo '</div>';
 	}
 
@@ -477,7 +477,7 @@ class Ucenter_Integration {
 				$value = isset( $_POST[$post_option] ) ? trim( $_POST[$post_option] ) : false;
 				$options[$post_option] = $value;
 				if ( $post_option == 'ucenter_hack_core' ) {
-					if ( $value ) 
+					if ( $value )
 						$this->hack_core();
 					else
 						$this->hack_core( 'remove' );

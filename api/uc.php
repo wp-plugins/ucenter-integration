@@ -11,11 +11,13 @@ define( 'API_UPDATEAPPS', 0 );
 define( 'API_UPDATECLIENT', 0 );
 define( 'API_UPDATECREDIT', 0 );
 define( 'API_GETCREDITSETTINGS', 1 );
-define( 'API_UPDATECREDITSETTINGS', 0 );
+define( 'API_UPDATECREDITSETTINGS', 1 );
 
 define( 'API_RETURN_SUCCEED', '1' );
 define( 'API_RETURN_FAILED', '-1' );
 define( 'API_RETURN_FORBIDDEN', '-2' );
+
+define( 'UCENTER_INTEGRATION_SETTING_NAME', 'plugin_ucenter_integration_settings' );
 
 error_reporting(0);
 
@@ -44,7 +46,7 @@ require_once( UCENTER_ROOT . '/client/lib/xml.class.php' );
 $code = $_GET['code'];
 parse_str( authcode( $code, 'DECODE', UC_KEY ), $get );
 
-if( get_magic_quotes_gpc() ) 
+if( get_magic_quotes_gpc() )
 	$get = dstripslashes($get);
 
 $timestamp = time();
@@ -53,8 +55,8 @@ if ( empty( $get ) )
 elseif ( $timestamp - $get['time'] > 3600 )
 	exit( 'Authracation has expiried' );
 
-if ( in_array( $get['action'], array( 'test', 'synlogin', 'synlogout', 'getcreditsettings', 'deleteuser' ) ) ) {
-	$post = xml_unserialize( file_get_contents( 'php://input' ) );
+if ( in_array( $get['action'], array( 'test', 'synlogin', 'synlogout', 'getcreditsettings', 'updatecreditsettings' ) ) ) {
+	$post = uc_unserialize( file_get_contents( 'php://input' ) );
 	$uc_note = new uc_note();
 	exit( $uc_note->$get['action']( $get, $post ) );
 } else {
@@ -65,7 +67,7 @@ class uc_note {
 	function test( $get, $post ) {
 		return API_RETURN_SUCCEED;
 	}
-	
+
 	function synlogin( $get, $post ) {
 		!API_SYNLOGIN && exit( API_RETURN_FORBIDDEN );
 
@@ -74,30 +76,38 @@ class uc_note {
 			header( 'P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"' );
 			wp_set_auth_cookie( $user->ID, false, '' );
 		}
-		
+
 		exit( API_RETURN_SUCCEED );
 	}
 
 	function synlogout( $get, $post ) {
 		!API_SYNLOGOUT && exit( API_RETURN_FORBIDDEN );
-		
-		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');	
+
+		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');
 		wp_clear_auth_cookie();
-	
+
 		exit( API_RETURN_SUCCEED );
 	}
 
 	function getcreditsettings( $get, $post ) {
 		!API_GETCREDITSETTINGS && exit( API_RETURN_FORBIDDEN );
 
-		$creditsettings = array();
-		$creditsettings[1] = array('a', 'b');
+		$options = get_option( UCENTER_INTEGRATION_SETTING_NAME );
+		if ( empty( $options['ucenter_credit_name'] ) )
+			exit( API_RETURN_FAILED );
+		$creditsettings[] = array( $options['ucenter_credit_name'], $options['ucenter_credit_unit'] );
 
-		exit( uc_serialize($creditsettings) );
+		exit( uc_serialize( $creditsettings ) );
 	}
 
-	function deleteuser( $get, $post ) {
-		!API_DELETEUSER && exit( API_RETURN_FORBIDDEN );
+	function updatecreditsettings( $get, $post ) {
+		!API_UPDATECREDITSETTINGS && exit( API_RETURN_FORBIDDEN );
+
+		if ( !empty( $get['credit'] ) ) {
+			$options = get_option( UCENTER_INTEGRATION_SETTING_NAME );
+			$options['ucenter_credit_exchange_setting'] = $get['credit'];
+			update_option( UCENTER_INTEGRATION_SETTING_NAME, $options );
+		}
 
 		exit( API_RETURN_SUCCEED );
 	}
