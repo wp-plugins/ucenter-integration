@@ -30,6 +30,16 @@ class Ucenter_Integration {
 		$this->define_settings = get_option( UCENTER_DEFINE_SETTING_NAME );
 		$this->integration_settings = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
+		if ( !file_exists( dirname( __FILE__ ) . '/config.php' ) && !empty( $this->define_settings ) ) {
+			$fp = fopen( dirname( __FILE__ ) . '/config.php', 'w' );
+			fwrite( $fp, "<?php\n" );
+			foreach ( $this->define_settings as $k => $v ) {
+				fwrite( $fp, "define('$k', '$v');\n" );
+			}
+			fwrite( $fp, "?>\n" );
+			fclose( $fp );
+		}
+
 		// Load dialect
 		add_action( 'init', array( &$this, 'load_dialect' ) );
 		add_action( 'init', array( &$this, 'clear_cookie' ) );
@@ -185,7 +195,7 @@ class Ucenter_Integration {
 			}
 		}
 
-		if ( $this->integration_settings['hack_core'] && !is_writable( ABSPATH . WPINC ) ) {
+		if ( $this->integration_settings['ucenter_hack_core'] && !is_writable( ABSPATH . WPINC ) ) {
 			echo "
 			<div class='updated'><p><strong>" . sprintf( __( 'Ucenter Integration: You have enabled hack core flag but %s is not writable.', 'ucenter' ), ABSPATH . WPINC ) . "</p></div>
 			";
@@ -240,7 +250,7 @@ class Ucenter_Integration {
 
 			} elseif ( !wp_check_password( $password, $userdata->user_pass, $userdata->ID ) ) {
 					// if user exists
-					if ( $this->integration_settings['password_override'] ) {
+					if ( $this->integration_settings['ucenter_password_override'] ) {
 						// if override, update wordpress user's password to ucenter's password
 						 $userdata->user_pass = wp_hash_password( $password );
 						 $user_id = wp_update_user( get_object_vars( $userdata ) );
@@ -385,11 +395,11 @@ class Ucenter_Integration {
 		wp_get_current_user();
 		echo '<div class=wrap>';
 		echo '<h2>' . __( 'Credit Exchange', 'ucenter' ) . '</h2>';
-		delete_usermeta( $current_user->ID, 'credit' );
-		$credit = get_usermeta( $current_user->ID, 'credit' );
+		$credit = get_usermeta( $current_user->ID, 'ucenter_credit' );
 		if ( empty( $credit ) ) 
 			$credit = 0;
 		echo 'Current Credits : ' . $credit;
+		echo $this->integration_settings['ucenter_credit_exchange_setting'];
 		echo '</div>';
 	}
 
@@ -455,7 +465,7 @@ class Ucenter_Integration {
 	}
 
 	function submenu_integration_settings() {
-		$page_options = 'password_override,hack_core';
+		$page_options = 'ucenter_password_override,ucenter_hack_core,ucenter_credit_name,ucenter_credit_unit';
 		$options = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
 		if ( $_POST['page_options'] )
@@ -466,7 +476,7 @@ class Ucenter_Integration {
 				$post_option = trim( $post_option );
 				$value = isset( $_POST[$post_option] ) ? trim( $_POST[$post_option] ) : false;
 				$options[$post_option] = $value;
-				if ( $post_option == 'hack_core' ) {
+				if ( $post_option == 'ucenter_hack_core' ) {
 					if ( $value ) 
 						$this->hack_core();
 					else
@@ -487,15 +497,27 @@ class Ucenter_Integration {
 		<table>
 			<tr>
 				<td>Password Override</td>
-				<td><input type="checkbox" name="password_override" value="1" <?php checked( '1', $options['password_override'] ); ?> /></td>
+				<td><input type="checkbox" name="ucenter_password_override" value="1" <?php checked( '1', $options['ucenter_password_override'] ); ?> /></td>
 			</tr>
 			<tr><td></td><td><?php _e( '<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, user\'s password in ucenter will override that in wordpress when encounter pair(user, password) confliction between ucenter and wordpress. If disable this option, confliction will make login fail.<strong><br >WARNINGS: OPERATION WHEN YOU CLEARLY UNDERSTAND ITS MEANING!</strong>', 'ucenter' ) ?></td></tr>
 
 			<tr>
 				<td>Hack Core</td>
-				<td><input type="checkbox" name="hack_core" value="1" <?php checked( '1', $options['hack_core'] ); ?> /></td>
+				<td><input type="checkbox" name="ucenter_hack_core" value="1" <?php checked( '1', $options['ucenter_hack_core'] ); ?> /></td>
 			</tr>
 			<tr><td></td><td><?php printf( __( '<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, ucenter integration plugin will hack wp core file "%s" to add some filter that isn\'t supplied by offical wp in order to make plugin work with entire functions. If disable this option, changes of user infomation will not go into ucenter when register/add/edit user in wordpress.', 'ucenter' ), ABSPATH . WPINC . '/registration.php' ) ?></td></tr>
+
+			<tr>
+				<td>Credit Name</td>
+				<td><input type="text" name="ucenter_credit_name" value="<?php echo $options['ucenter_credit_name']; ?>"/></td>
+			</tr>
+			<tr><td></td><td></td></tr>
+
+			<tr>
+				<td>Credit Unit</td>
+				<td><input type="test" name="ucenter_credit_unit" value="<?php echo $options['ucenter_credit_unit']; ?>"/></td>
+			</tr>
+			<tr><td></td><td></td></tr>
 
 		</table>
 
