@@ -173,6 +173,17 @@ class Ucenter_Integration {
 	}
 
 	function load_needed_files() {
+		echo "
+		<style type='text/css'>
+		.ucenter-ul li {
+			float:left;
+			margin-left:10px;
+		}
+		.ucenter-ul .current {
+			border: 1px solid;	
+			padding:5px;
+		}
+		</style>"; 	
 	}
 
 	function get_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
@@ -408,13 +419,15 @@ class Ucenter_Integration {
 			add_submenu_page( 'users.php', __( 'Customize Icon', 'ucenter' ) , __( 'Customize Icon', 'ucenter' ), 'read', 'ucenter-customize-icon', array( &$this, 'submenu_customize_icon' ) );
 
 			add_submenu_page( 'users.php', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
+
+			add_submenu_page( 'users.php', __( 'Mail Box', 'ucenter' ) , __( 'Mail Box', 'ucenter' ), 'read', 'ucenter-mail-box', array( &$this, 'submenu_mail_box' ) );
 	}
 
 	function submenu_customize_icon() {
-		global $current_user;
-		wp_get_current_user();
 		echo '<div class=wrap>';
 		echo '<h2>' . __( 'Customize Icon', 'ucenter' ) . '</h2>';
+		global $current_user;
+		wp_get_current_user();
 		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
 		$icons = array( 'big' => __( 'Big Icon', 'ucenter' ), 'middle' => __( 'Middle Icon', 'ucenter' ), 'small' => __( 'Small Icon', 'ucenter' ) );
 		echo '<div style="float:left;border-right: 2px dotted;width:220px;">';
@@ -430,10 +443,10 @@ class Ucenter_Integration {
 	}
 
 	function submenu_credit_exchange() {
-		global $current_user;
-		wp_get_current_user();
 		echo '<div class=wrap>';
 		echo '<h2>' . __( 'Credit Exchange', 'ucenter' ) . '</h2>';
+		global $current_user;
+		wp_get_current_user();
 		$credit = get_usermeta( $current_user->ID, 'ucenter_credit' );
 		if ( empty( $credit ) )
 			$credit = 0;
@@ -453,6 +466,162 @@ class Ucenter_Integration {
 				</div>
 			</div>
 		';
+		echo '</div>';
+	}
+
+	function submenu_mail_box() {
+		echo '<div class=wrap>';
+		echo '<h2>' . __( 'Mail Box', 'ucenter' ) . '</h2>';
+		global $current_user;
+		wp_get_current_user();
+		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
+
+		$timeoffset = get_option( 'gmt_offset' );
+		$pm_per_page = 10;
+		$max_msg_length = 100;
+		$handler = $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'];
+		$current_handler = $handler . '&tab='. $_GET['tab'];
+		$action = !empty($_GET['action']) ? $_GET['action'] : '';
+
+		$menu = array(
+			array( 'inbox', '', __( 'Inbox', 'hlbe' ) ),
+			array( 'uread', 'filter=newpm', __( 'Unread Mail', 'hlbe' ) ),
+			array( 'announcepm', 'filter=announcepm', __( 'Public Message', 'hlbe' ) ),
+			array( 'systempm', 'filter=systempm', __( 'System Message', 'hlbe' ) ),
+			array( 'send', 'action=send', __( 'Send Message', 'hlbe' ) ),
+			array( 'blacklist', 'action=blacklist', __( 'Black List', 'hlbe' ) ),
+		);
+		
+		echo '<ul class="ucenter-ul">';
+		foreach ( $menu as $item) {
+			printf( '<li><a href="%s&tab=%s&%s" %s>%s</a></li>', $handler, $item[0], $item[1], $_GET['tab'] == $item[0] ? 'class="current"' : '', $item[2] );
+		}
+		echo '</ul><br /><hr />';
+		switch ( $action ) {
+			case '':
+				$_GET['pageid'] =  max( 1, intval( $_GET['pageid'] ) );
+				$_GET['filter'] = !empty( $_GET['filter'] ) ? $_GET['filter'] : '';
+				
+				$data = uc_pm_list( $uid, $_GET['pageid'], $pm_per_page, $_GET['folder'], $_GET['filter'], $max_msg_length );
+
+				foreach ( $data['data'] as $pm ) {
+					if ( $_GET['filter'] == 'announcepm' || $_GET['filter'] == 'systempm' ) {
+						$output .= "<li><a href='$current_handler&action=view&subtab=today&pmid=$pm[pmid]'>$pm[subject]</a>";
+						$output .= "<br /> " . __( 'Content:', 'hlbe' ) . "$pm[message]</li>";
+					} else {
+						$output .= "<li><a href='$current_handler&action=view&subtab=today&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
+						$pm['new'] && $output .= " New! ";
+						$output .= "<br /> " . __( 'Content: ', 'hlbe' ) . "$pm[message]</li>";
+					}			
+				}
+				
+				$page_n = $data['count'] / $pm_per_page; 
+				if ( $page_n > 1) {
+					$output .= '<hr / ><br />';
+					$output .= __( 'Page ', 'hlbe' );
+					for ( $i = 1; $i <= $page_n; $i++) {
+						$output .= " <a href='$current_handler&pageid=$i'>$i</a> ";
+					}
+				}
+				break;
+			case 'view':
+				$pmid = !empty( $_GET['pmid'] ) ? $_GET['pmid'] : '';
+				$daterange = !empty( $_GET['daterange'] ) ? $_GET['daterange'] : '1';
+				$data = uc_pm_view( $uid, $pmid, $_GET['touid'], $daterange );
+				
+
+				$dateranges = array(
+					array( 'today', '1', __( 'Today', 'hlbe' ) ),
+					array( 'yesterday', '2', __( 'Yesterday', 'hlbe' ) ),
+					array( 'thedaybeforeyesterday', '3', __( 'The Day Before Yesterday', 'hlbe' ) ),
+					array( 'lastweek', '4', __( 'Last Week', 'hlbe' ) ),
+					array( 'old', '5', __( 'Old', 'hlbe' ) ),
+				);
+
+				echo '<ul class="ucenter-ul">';
+				foreach ( $dateranges as $item) {
+					printf( '<li><a href="%s&action=view&touid=%s&pmid=%s&subtab=%s&daterange=%s" %s>%s</a></li>', $current_handler, $_GET['touid'], $pmid, $item[0], $item[1], $_GET['subtab'] == $item[0] ? 'class="current"' : '', $item[2] );
+				}
+				echo '</ul><br /><hr />';
+
+				foreach($data as $pm) {
+					$output .= "<b>$pm[msgfrom]</b>";
+					if ( $_GET['touid'] == $pm['msgfromid'] ) {
+						$output .= "<a href='$current_handler&action=addblacklist&user=$pm[msgfrom]'>" . __( ' [ Ban This User ] ', 'hlbe' ) . "</a>";
+					}
+					$output .= ' ( ' . gmdate('Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600) . ' ) ';
+					$output .= "<br />$pm[message]<br /><br />";
+				}
+				
+				if(empty($_GET['pmid'])) {
+					$output .= "
+						<a href='$current_handler&action=delete&uid=$_GET[touid]'>" . __( 'Delete All Message From This user', 'hlbe' ) . "</a><br />
+						Reply:
+						<form method='post' action='$current_handler&action=send'>
+						<input name='touid' type='hidden' value='$_GET[touid]'>
+						<textarea name='message' cols='30' rows='5'></textarea><br />
+						<input type='submit'>
+						</form>
+						";
+				}
+				break;
+			case 'delete':
+				if ( uc_pm_deleteuser( $uid, array( $_GET['uid'] ) ) ) {
+					$output .= __( 'Deleted', 'hlbe' );
+				}
+				break;
+			case 'addblacklist':
+				$user = !empty( $_GET['user'] ) ? $_GET['user'] : (!empty( $_POST['user'] ) ? $_POST['user'] : '');
+				if ( uc_pm_blackls_add( $uid, $user ) ) {
+					$output .= $_GET['user'] . __( 'has been added to your black list', 'hlbe' );
+				}
+				break;
+			case 'deleteblacklist':
+				if ( uc_pm_blackls_delete( $uid, $_GET['user'] ) ) {
+					$output .= $_GET['user'] . __( 'has been removed from your black list', 'hlbe' );
+				}
+				break;
+			case 'blacklist':
+				$data = explode( ',', uc_pm_blackls_get( $uid ) );
+				foreach ($data as $ls ) {
+					$ls && $output .= "$ls <a href='$current_handler&action=deleteblacklist&user=$ls'>" . __( 'Remove', 'hlbe' ) . "</a>";
+				}
+				$output .= "
+					<form method='post' action='$current_handler&action=addblacklist'>
+					<input type='input' name='user' value=''>
+					<input type='submit'>
+					</form>
+					";
+				break;
+			case 'send':
+				if ( !empty( $_POST ) ) {
+					if( !empty( $_POST['touser'] ) ) {
+						$msgto = $_POST['touser'];
+						$isusername = 1;
+					} else {
+						$msgto = $_POST['touid'];
+						$isusername = 0;
+					}
+					if( uc_pm_send( $uid, $msgto, $_POST['subject'], $_POST['message'], 1, 0, $isusername ) ) {
+						$output .= __( 'Sended', 'hlbe');
+					} else {
+						$output .= __( 'Failed', 'hlbe');
+					}
+				} else {
+					$output .= "
+						<form method='post' action='$current_handler&action=send'>
+						<table>
+						<tr><td>to:</td><td><input name='touser' value=''></td></tr>
+						<tr><td>subject:</td><td><input name='subject' value=''><br></td></tr>
+						<tr><td>content:</td><td><textarea name='message' cols='30' rows='5'></textarea></td></tr>
+						</table>
+						<input type='submit'>
+						</form>
+						";
+				}
+				break;
+		}
+		echo $output;
 		echo '</div>';
 	}
 
