@@ -51,8 +51,8 @@ class Ucenter_Integration {
 		add_action( 'deactivated_plugin', array( &$this, 'deactivated_plugin' ) );
 		// Activate
 		add_action( 'activated_plugin', array( &$this, 'activated_plugin' ) );
-		// Load Jquery UI Tabs
-		add_action( 'admin_head', array( &$this, 'load_needed_files' ) );
+		// Load css
+		add_action( 'admin_head', array( &$this, 'load_css' ) );
 
 		if ( file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
 
@@ -135,21 +135,15 @@ class Ucenter_Integration {
 			// Update ucenter user when update wordpress user
 			add_action( 'user_profile_update_errors', array( &$this, 'update_user' ), 40, 3 );
 
-			// Use costomize icon
-			add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
-			
 			// Add Admin menu for ucenter integration
 			add_action( 'admin_menu', array( &$this, 'add_user_submenu_page' ) );
 
 			// Add hook for comment credit
-			add_action( 'wp_insert_comment', array ( &$this, 'insert_comment' ), 30, 2 );
+			add_action( 'wp_insert_comment', array ( &$this, 'comment_credit' ), 30, 2 );
+			
+			// Use costomize icon
+			add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
 		}
-	}
-
-	function insert_comment( $id, $comment ) {
-		$credit = get_usermeta( $comment->user_id, 'ucenter_credit' );
-		$credit += $this->integration_settings['ucenter_credit_per_comment'];
-		update_usermeta($comment->user_id, 'ucenter_credit', $credit);
 	}
 
 	function debug( $msg ) {
@@ -181,7 +175,7 @@ class Ucenter_Integration {
 		}
 	}
 
-	function load_needed_files() {
+	function load_css() {
 		echo "
 		<style type='text/css'>
 		.ucenter-ul li {
@@ -193,6 +187,12 @@ class Ucenter_Integration {
 			padding:5px;
 		}
 		</style>"; 	
+	}
+
+	function comment_credit( $id, $comment ) {
+		$credit = get_usermeta( $comment->user_id, 'ucenter_credit' );
+		$credit += $this->integration_settings['ucenter_credit_per_comment'];
+		update_usermeta($comment->user_id, 'ucenter_credit', $credit);
 	}
 
 	function get_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
