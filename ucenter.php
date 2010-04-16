@@ -140,7 +140,16 @@ class Ucenter_Integration {
 			
 			// Add Admin menu for ucenter integration
 			add_action( 'admin_menu', array( &$this, 'add_user_submenu_page' ) );
+
+			// Add hook for comment credit
+			add_action( 'wp_insert_comment', array ( &$this, 'insert_comment' ), 30, 2 );
 		}
+	}
+
+	function insert_comment( $id, $comment ) {
+		$credit = get_usermeta( $comment->user_id, 'ucenter_credit' );
+		$credit += $this->integration_settings['ucenter_credit_per_comment'];
+		update_usermeta($comment->user_id, 'ucenter_credit', $credit);
 	}
 
 	function debug( $msg ) {
@@ -774,7 +783,7 @@ class Ucenter_Integration {
 	}
 
 	function submenu_integration_settings() {
-		$page_options = 'ucenter_password_override,ucenter_hack_core,ucenter_credit_name,ucenter_credit_unit';
+		$page_options = 'ucenter_password_override,ucenter_hack_core,ucenter_credit_name,ucenter_credit_unit,ucenter_credit_per_comment,ucenter_credit_per_post';
 		$options = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
 		if ( $_POST['page_options'] )
@@ -825,6 +834,18 @@ class Ucenter_Integration {
 			<tr>
 				<td>Credit Unit</td>
 				<td><input type="test" name="ucenter_credit_unit" value="<?php echo $options['ucenter_credit_unit']; ?>"/></td>
+			</tr>
+			<tr><td></td><td></td></tr>
+
+			<tr>
+				<td>Credit Per Comment</td>
+				<td><input type="test" name="ucenter_credit_per_comment" value="<?php echo $options['ucenter_credit_per_comment']; ?>"/></td>
+			</tr>
+			<tr><td></td><td></td></tr>
+
+			<tr>
+				<td>Credit Per Post</td>
+				<td><input type="test" name="ucenter_credit_per_post" value="<?php echo $options['ucenter_credit_per_post']; ?>"/></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
