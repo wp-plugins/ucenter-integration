@@ -421,6 +421,8 @@ class Ucenter_Integration {
 			add_submenu_page( 'users.php', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
 
 			add_submenu_page( 'users.php', __( 'Mail Box', 'ucenter' ) , __( 'Mail Box', 'ucenter' ), 'read', 'ucenter-mail-box', array( &$this, 'submenu_mail_box' ) );
+
+			add_submenu_page( 'users.php', __( 'Friend', 'ucenter' ) , __( 'Friend', 'ucenter' ), 'read', 'ucenter-friend', array( &$this, 'submenu_frienD' ) );
 	}
 
 	function submenu_customize_icon() {
@@ -484,12 +486,12 @@ class Ucenter_Integration {
 		$action = !empty($_GET['action']) ? $_GET['action'] : '';
 
 		$menu = array(
-			array( 'inbox', '', __( 'Inbox', 'hlbe' ) ),
-			array( 'uread', 'filter=newpm', __( 'Unread Mail', 'hlbe' ) ),
-			array( 'announcepm', 'filter=announcepm', __( 'Public Message', 'hlbe' ) ),
-			array( 'systempm', 'filter=systempm', __( 'System Message', 'hlbe' ) ),
-			array( 'send', 'action=send', __( 'Send Message', 'hlbe' ) ),
-			array( 'blacklist', 'action=blacklist', __( 'Black List', 'hlbe' ) ),
+			array( 'inbox', '', __( 'Inbox', 'ucenter' ) ),
+			array( 'uread', 'filter=newpm', __( 'Unread Mail', 'ucenter' ) ),
+			array( 'announcepm', 'filter=announcepm', __( 'Public Message', 'ucenter' ) ),
+			array( 'systempm', 'filter=systempm', __( 'System Message', 'ucenter' ) ),
+			array( 'send', 'action=send', __( 'Send Message', 'ucenter' ) ),
+			array( 'blacklist', 'action=blacklist', __( 'Black List', 'ucenter' ) ),
 		);
 		
 		echo '<ul class="ucenter-ul">';
@@ -506,19 +508,19 @@ class Ucenter_Integration {
 
 				foreach ( $data['data'] as $pm ) {
 					if ( $_GET['filter'] == 'announcepm' || $_GET['filter'] == 'systempm' ) {
-						$output .= "<li><a href='$current_handler&action=view&subtab=today&pmid=$pm[pmid]'>$pm[subject]</a>";
-						$output .= "<br /> " . __( 'Content:', 'hlbe' ) . "$pm[message]</li>";
+						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&pmid=$pm[pmid]'>$pm[subject]</a>";
+						$output .= "<br /> " . __( 'Content:', 'ucenter' ) . "$pm[message]</li>";
 					} else {
-						$output .= "<li><a href='$current_handler&action=view&subtab=today&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
+						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
 						$pm['new'] && $output .= " New! ";
-						$output .= "<br /> " . __( 'Content: ', 'hlbe' ) . "$pm[message]</li>";
+						$output .= "<br /> " . __( 'Content: ', 'ucenter' ) . "$pm[message]</li>";
 					}			
 				}
 				
 				$page_n = $data['count'] / $pm_per_page; 
 				if ( $page_n > 1) {
 					$output .= '<hr / ><br />';
-					$output .= __( 'Page ', 'hlbe' );
+					$output .= __( 'Page ', 'ucenter' );
 					for ( $i = 1; $i <= $page_n; $i++) {
 						$output .= " <a href='$current_handler&pageid=$i'>$i</a> ";
 					}
@@ -531,11 +533,9 @@ class Ucenter_Integration {
 				
 
 				$dateranges = array(
-					array( 'today', '1', __( 'Today', 'hlbe' ) ),
-					array( 'yesterday', '2', __( 'Yesterday', 'hlbe' ) ),
-					array( 'thedaybeforeyesterday', '3', __( 'The Day Before Yesterday', 'hlbe' ) ),
-					array( 'lastweek', '4', __( 'Last Week', 'hlbe' ) ),
-					array( 'old', '5', __( 'Old', 'hlbe' ) ),
+					array( 'within3days', '3', __( 'Within 3 Days', 'ucenter' ) ),
+					array( 'within1week', '4', __( 'Within This Week', 'ucenter' ) ),
+					array( 'all', '5', __( 'All', 'ucenter' ) ),
 				);
 
 				echo '<ul class="ucenter-ul">';
@@ -547,7 +547,7 @@ class Ucenter_Integration {
 				foreach($data as $pm) {
 					$output .= "<b>$pm[msgfrom]</b>";
 					if ( $_GET['touid'] == $pm['msgfromid'] ) {
-						$output .= "<a href='$current_handler&action=addblacklist&user=$pm[msgfrom]'>" . __( ' [ Ban This User ] ', 'hlbe' ) . "</a>";
+						$output .= "<a href='$current_handler&action=addblacklist&user=$pm[msgfrom]'>" . __( ' [ Ban This User ] ', 'ucenter' ) . "</a>";
 					}
 					$output .= ' ( ' . gmdate('Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600) . ' ) ';
 					$output .= "<br />$pm[message]<br /><br />";
@@ -555,7 +555,7 @@ class Ucenter_Integration {
 				
 				if(empty($_GET['pmid'])) {
 					$output .= "
-						<a href='$current_handler&action=delete&uid=$_GET[touid]'>" . __( 'Delete All Message From This user', 'hlbe' ) . "</a><br />
+						<a href='$current_handler&action=delete&uid=$_GET[touid]'>" . __( 'Delete All Message From This user', 'ucenter' ) . "</a><br />
 						Reply:
 						<form method='post' action='$current_handler&action=send'>
 						<input name='touid' type='hidden' value='$_GET[touid]'>
@@ -567,24 +567,24 @@ class Ucenter_Integration {
 				break;
 			case 'delete':
 				if ( uc_pm_deleteuser( $uid, array( $_GET['uid'] ) ) ) {
-					$output .= __( 'Deleted', 'hlbe' );
+					$output .= __( 'Deleted', 'ucenter' );
 				}
 				break;
 			case 'addblacklist':
 				$user = !empty( $_GET['user'] ) ? $_GET['user'] : (!empty( $_POST['user'] ) ? $_POST['user'] : '');
 				if ( uc_pm_blackls_add( $uid, $user ) ) {
-					$output .= $_GET['user'] . __( 'has been added to your black list', 'hlbe' );
+					$output .= $_GET['user'] . __( 'has been added to your black list', 'ucenter' );
 				}
 				break;
 			case 'deleteblacklist':
 				if ( uc_pm_blackls_delete( $uid, $_GET['user'] ) ) {
-					$output .= $_GET['user'] . __( 'has been removed from your black list', 'hlbe' );
+					$output .= $_GET['user'] . __( 'has been removed from your black list', 'ucenter' );
 				}
 				break;
 			case 'blacklist':
 				$data = explode( ',', uc_pm_blackls_get( $uid ) );
 				foreach ($data as $ls ) {
-					$ls && $output .= "$ls <a href='$current_handler&action=deleteblacklist&user=$ls'>" . __( 'Remove', 'hlbe' ) . "</a>";
+					$ls && $output .= "$ls <a href='$current_handler&action=deleteblacklist&user=$ls'>" . __( 'Remove', 'ucenter' ) . "</a>";
 				}
 				$output .= "
 					<form method='post' action='$current_handler&action=addblacklist'>
@@ -603,15 +603,15 @@ class Ucenter_Integration {
 						$isusername = 0;
 					}
 					if( uc_pm_send( $uid, $msgto, $_POST['subject'], $_POST['message'], 1, 0, $isusername ) ) {
-						$output .= __( 'Sended', 'hlbe');
+						$output .= __( 'Sended', 'ucenter');
 					} else {
-						$output .= __( 'Failed', 'hlbe');
+						$output .= __( 'Failed', 'ucenter');
 					}
 				} else {
 					$output .= "
 						<form method='post' action='$current_handler&action=send'>
 						<table>
-						<tr><td>to:</td><td><input name='touser' value=''></td></tr>
+						<tr><td>to:</td><td><input name='touser' value='$_GET[touser]'></td></tr>
 						<tr><td>subject:</td><td><input name='subject' value=''><br></td></tr>
 						<tr><td>content:</td><td><textarea name='message' cols='30' rows='5'></textarea></td></tr>
 						</table>
@@ -622,6 +622,70 @@ class Ucenter_Integration {
 				break;
 		}
 		echo $output;
+		echo '</div>';
+	}
+
+	function submenu_friend() {
+		echo '<div class=wrap>';
+		echo '<h2>' . __( 'Friend', 'ucenter' ) . '</h2>';
+		global $current_user;
+		wp_get_current_user();
+		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
+
+		$friends_per_page = 10;
+		$handler = $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'];
+		$action = !empty( $_GET['action'] ) ? $_GET['action'] : 'view';
+		
+		$menu = array(
+			array( 'friend', '', __( 'Friend', 'ucenter' ) ),
+			array( 'focus', '', __( 'Focus', 'ucenter' ) ),
+			array( 'add', 'action=add', __( 'Add Friend', 'ucenter' ) ),
+		);
+		echo '<ul class="ucenter-ul">';
+		foreach ( $menu as $item) {
+			printf( '<li><a href="%s&tab=%s&%s" %s>%s</a></li>', $handler, $item[0], $item[1], $_GET['tab'] == $item[0] ? 'class="current"' : '', $item[2] );
+		}
+		echo '</ul><br /><hr />';
+
+		switch ( $action ) {
+			case 'view':
+				$_GET['pageid'] = !empty( $_GET['pageid'] ) ? $_GET['pageid'] : 1;
+				$_GET['tab'] = !empty( $_GET['tab'] ) ? $_GET['tab'] : 'friend';
+				$direction = !empty( $_GET['tab'] ) && $_GET['tab'] == 'focus' ? 1 : 3;
+				$num = uc_friend_totalnum( $uid, $direction );
+				$friendlist = uc_friend_ls( $uid, $_GET['pageid'], $friends_per_page, $num, $direction );
+				if ( $friendlist ) {
+					echo '<ul>';
+					foreach ( $friendlist as $friend ) {
+						echo "<li>$friend[username] : $friend[comment] [ <a href='$_SERVER[PHP_SELF]?page=ucenter-mail-box&tab=send&action=send&touser=$friend[username]'>Send Message</a> | <a href='$handler&action=delete&delete=$friend[friendid]'>Delete</a> ] </li>";
+					}
+					echo '</ul>';
+				}
+				break;
+			case 'add':
+				if( $_POST['newfriend'] && $friendid = uc_get_user( $_POST['newfriend'] ) ) {
+					if ( uc_friend_add( $uid, $friendid[0], $_POST['newcomment'] ) )
+						echo $_POST['newfriend'] . __( ' has been added to your list!', 'ucenter' ) . '<br /><br />';
+				}
+				
+				echo '<form method="post" action="' . $handler . '&action=add&tab=' . $_GET['tab'] . '">';
+				echo '<table>';
+				echo '<tr><td>' . __( 'Add Friend', 'ucenter' ) . '</td><td><input name="newfriend"></td>';
+				echo '<tr><td>' . __( 'Description', 'ucenter' ) . '</td><td><input name="newcomment"></td>';
+				echo '</table>';
+				echo '<input name="submit" type="submit"> ';
+				echo '</form>';
+				break;
+			case 'delete':
+				if ( !is_array( $_GET['delete'] ) ) {
+					$_GET['delete'] = array( $_GET['delete'] );
+				}	 
+				if( !empty( $_GET['delete'] ) ) {
+					if( uc_friend_delete( $uid, $_GET['delete'] ) )
+						echo __( 'Removed!', 'ucenter' );
+				}
+				break;
+		}
 		echo '</div>';
 	}
 
