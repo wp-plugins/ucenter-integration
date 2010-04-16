@@ -1,0 +1,364 @@
+# Translation of the WordPress plugin   by .
+# Copyright (C) 2010 
+# This file is distributed under the same license as the  package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/ucenter-integration\n"
+"POT-Creation-Date: 2010-04-16 10:38-0300\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: tags/0.1/ucenter.php:33 trunk/ucenter.php:255 trunk/ucenter.php:261
+#, php-format
+msgid ""
+"Ucenter Integration: Ucenter integration plugin is active now. But you must "
+"finish all related <a href=\"%s\">settings</a> to make it work correctly."
+msgstr ""
+
+#: tags/0.1/ucenter.php:38 trunk/ucenter.php:268
+#, php-format
+msgid ""
+"Ucenter Integration: You have enabled hack core flag but %s is not writable."
+msgstr ""
+
+#: tags/0.1/ucenter.php:44 trunk/ucenter.php:274
+#, php-format
+msgid "Ucenter Integration: %s is not writable."
+msgstr ""
+
+#: tags/0.1/ucenter.php:67 tags/0.1/ucenter.php:192 tags/0.1/ucenter.php:204
+#: trunk/ucenter.php:288 trunk/ucenter.php:408 trunk/ucenter.php:420
+#, php-format
+msgid ""
+"<strong>ERROR</strong>: Couldn&#8217;t register you in ucenter... please "
+"contact the <a href=\"mailto:%s\">webmaster</a> !"
+msgstr ""
+
+#: tags/0.1/ucenter.php:75 trunk/ucenter.php:296
+msgid "<strong>ERROR</strong>: The username field is empty."
+msgstr ""
+
+#: tags/0.1/ucenter.php:78 trunk/ucenter.php:299
+msgid "<strong>ERROR</strong>: The password field is empty."
+msgstr ""
+
+#: tags/0.1/ucenter.php:96 trunk/ucenter.php:317
+#, php-format
+msgid ""
+"<strong>ERROR</strong>: Couldn&#8217;t register you in wordpress... please "
+"contact the <a href=\"mailto:%s\">webmaster</a> !"
+msgstr ""
+
+#: tags/0.1/ucenter.php:107 trunk/ucenter.php:328
+#, php-format
+msgid ""
+"<strong>ERROR</strong>: User password conflict between wordpress and "
+"ucenter. please contact the <a href=\"mailto:%s\">webmaster</a> !"
+msgstr ""
+
+#: tags/0.1/ucenter.php:111 trunk/ucenter.php:332
+#, php-format
+msgid ""
+"<strong>ERROR</strong>: Invalid username. <a href=\"%s\" title=\"Password "
+"Lost and Found\">Lost your password</a>?"
+msgstr ""
+
+#: tags/0.1/ucenter.php:113 trunk/ucenter.php:334
+#, php-format
+msgid ""
+"<strong>ERROR</strong>: Incorrect password. <a href=\"%s\" title=\"Password "
+"Lost and Found\">Lost your password</a>?"
+msgstr ""
+
+#: tags/0.1/ucenter.php:168 tags/0.1/ucenter.php:188 tags/0.1/ucenter.php:200
+#: trunk/ucenter.php:385 trunk/ucenter.php:404 trunk/ucenter.php:416
+msgid ""
+"<strong>ERROR</strong>: This username is already registered, please choose "
+"another one."
+msgstr ""
+
+#: tags/0.1/ucenter.php:172 tags/0.1/ucenter.php:183 tags/0.1/ucenter.php:190
+#: tags/0.1/ucenter.php:202 trunk/ucenter.php:389 trunk/ucenter.php:399
+#: trunk/ucenter.php:406 trunk/ucenter.php:418
+msgid ""
+"<strong>ERROR</strong>: This email is already registered, please choose "
+"another one."
+msgstr ""
+
+#: tags/0.1/ucenter.php:217 trunk/ucenter.php:428
+msgid "Ucenter"
+msgstr ""
+
+#: tags/0.1/ucenter.php:219 trunk/ucenter.php:430
+msgid "Introduction"
+msgstr ""
+
+#: tags/0.1/ucenter.php:221 trunk/ucenter.php:432
+msgid "Define Settings"
+msgstr ""
+
+#: tags/0.1/ucenter.php:223 trunk/ucenter.php:434
+msgid "Integration Settings"
+msgstr ""
+
+#: tags/0.1/ucenter.php:229 trunk/ucenter.php:742
+msgid "Ucenter Introduction"
+msgstr ""
+
+#: tags/0.1/ucenter.php:230 trunk/ucenter.php:743
+msgid ""
+"<p>Ucenter Integration Plugin will help you integrate wordpress with ucenter "
+"supported platforms. If you find any bug, please email to nkucyd at gmail."
+"com. Your help is appreciated. </p>"
+msgstr ""
+
+#: tags/0.1/ucenter.php:231 trunk/ucenter.php:744
+msgid "You should follow there steps to make plugin work well:"
+msgstr ""
+
+#: tags/0.1/ucenter.php:232 trunk/ucenter.php:745
+#, php-format
+msgid ""
+"<br>1. Login ucenter to add wordpress as app. NOTICE: you should fill APP'S "
+"URL with http://yourdomain/wp-content/plugins/%s<br>"
+msgstr ""
+
+#: tags/0.1/ucenter.php:233 trunk/ucenter.php:746
+msgid "2. Finish define setting accoding to ucenter.<br>"
+msgstr ""
+
+#: tags/0.1/ucenter.php:234 trunk/ucenter.php:747
+msgid "3. Change integration setting according to your preferrence."
+msgstr ""
+
+#: tags/0.1/ucenter.php:260 tags/0.1/ucenter.php:319 trunk/ucenter.php:773
+#: trunk/ucenter.php:821
+msgid "Options saved."
+msgstr ""
+
+#: tags/0.1/ucenter.php:264 trunk/ucenter.php:777
+msgid "Ucenter Define Settings"
+msgstr ""
+
+#: tags/0.1/ucenter.php:279 tags/0.1/ucenter.php:344 trunk/ucenter.php:792
+#: trunk/ucenter.php:888
+msgid "Update Options"
+msgstr ""
+
+#: tags/0.1/ucenter.php:323 trunk/ucenter.php:825
+msgid "Ucenter Integration Settings"
+msgstr ""
+
+#: tags/0.1/ucenter.php:333 trunk/ucenter.php:835
+msgid ""
+"<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, "
+"user's password in ucenter will override that in wordpress when encounter "
+"pair(user, password) confliction between ucenter and wordpress. If disable "
+"this option, confliction will make login fail.<strong><br >WARNINGS: "
+"OPERATION WHEN YOU CLEARLY UNDERSTAND ITS MEANING!</strong>"
+msgstr ""
+
+#: tags/0.1/ucenter.php:339 trunk/ucenter.php:841
+#, php-format
+msgid ""
+"<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, "
+"ucenter integration plugin will hack wp core file \"%s\" to add some filter "
+"that isn't supplied by offical wp in order to make plugin work with entire "
+"functions. If disable this option, changes of user infomation will not go "
+"into ucenter when register/add/edit user in wordpress."
+msgstr ""
+
+#: trunk/ucenter.php:440 trunk/ucenter.php:521
+msgid "Mail Box"
+msgstr ""
+
+#: trunk/ucenter.php:443 trunk/ucenter.php:455
+msgid "Customize Icon"
+msgstr ""
+
+#: trunk/ucenter.php:447 trunk/ucenter.php:676 trunk/ucenter.php:687
+msgid "Friend"
+msgstr ""
+
+#: trunk/ucenter.php:450 trunk/ucenter.php:475
+msgid "Credit Exchange"
+msgstr ""
+
+#: trunk/ucenter.php:460
+msgid "Big Icon"
+msgstr ""
+
+#: trunk/ucenter.php:460
+msgid "Middle Icon"
+msgstr ""
+
+#: trunk/ucenter.php:460
+msgid "Small Icon"
+msgstr ""
+
+#: trunk/ucenter.php:482
+msgid "Current Credits : "
+msgstr ""
+
+#: trunk/ucenter.php:483
+msgid "Exchange : "
+msgstr ""
+
+#: trunk/ucenter.php:492
+#, php-format
+msgid ""
+"Exchange %s <input type=\"text\" name=\"amount\" size=5 value=\"0\"> %s to %"
+"s %s with ratio %s"
+msgstr ""
+
+#: trunk/ucenter.php:510
+msgid "Exchange Success!"
+msgstr ""
+
+#: trunk/ucenter.php:514
+msgid "Invalid Credit Amount!"
+msgstr ""
+
+#: trunk/ucenter.php:535
+msgid "Inbox"
+msgstr ""
+
+#: trunk/ucenter.php:536
+msgid "Unread Mail"
+msgstr ""
+
+#: trunk/ucenter.php:537
+msgid "Public Message"
+msgstr ""
+
+#: trunk/ucenter.php:538
+msgid "System Message"
+msgstr ""
+
+#: trunk/ucenter.php:539
+msgid "Send Message"
+msgstr ""
+
+#: trunk/ucenter.php:540
+msgid "Black List"
+msgstr ""
+
+#: trunk/ucenter.php:558
+msgid "Content:"
+msgstr ""
+
+#: trunk/ucenter.php:562
+msgid "Content: "
+msgstr ""
+
+#: trunk/ucenter.php:569
+msgid "Page "
+msgstr ""
+
+#: trunk/ucenter.php:582
+msgid "Within 3 Days"
+msgstr ""
+
+#: trunk/ucenter.php:583
+msgid "Within This Week"
+msgstr ""
+
+#: trunk/ucenter.php:584
+msgid "All"
+msgstr ""
+
+#: trunk/ucenter.php:596
+msgid " [ Ban This User ] "
+msgstr ""
+
+#: trunk/ucenter.php:604
+msgid "Delete All Message From This user"
+msgstr ""
+
+#: trunk/ucenter.php:616
+msgid "Deleted"
+msgstr ""
+
+#: trunk/ucenter.php:622
+msgid "has been added to your black list"
+msgstr ""
+
+#: trunk/ucenter.php:627
+msgid "has been removed from your black list"
+msgstr ""
+
+#: trunk/ucenter.php:633
+msgid "Remove"
+msgstr ""
+
+#: trunk/ucenter.php:652
+msgid "Sended"
+msgstr ""
+
+#: trunk/ucenter.php:654
+msgid "Failed"
+msgstr ""
+
+#: trunk/ucenter.php:688
+msgid "Focus"
+msgstr ""
+
+#: trunk/ucenter.php:689 trunk/ucenter.php:720
+msgid "Add Friend"
+msgstr ""
+
+#: trunk/ucenter.php:715
+msgid " has been added to your list!"
+msgstr ""
+
+#: trunk/ucenter.php:721
+msgid "Description"
+msgstr ""
+
+#: trunk/ucenter.php:732
+msgid "Removed!"
+msgstr ""
+
+#: trunk/ucenter.php:832
+msgid "Password Override"
+msgstr ""
+
+#: trunk/ucenter.php:838
+msgid "Hack Core"
+msgstr ""
+
+#: trunk/ucenter.php:844
+msgid "Credit Name"
+msgstr ""
+
+#: trunk/ucenter.php:850
+msgid "Credit Unit"
+msgstr ""
+
+#: trunk/ucenter.php:856
+msgid "Credit Per Comment"
+msgstr ""
+
+#: trunk/ucenter.php:862
+msgid "Enable Mail Box"
+msgstr ""
+
+#: trunk/ucenter.php:868
+msgid "Enable Customize Icon"
+msgstr ""
+
+#: trunk/ucenter.php:874
+msgid "Enable Friend"
+msgstr ""
+
+#: trunk/ucenter.php:880
+msgid "Enable Credit"
+msgstr ""
