@@ -449,25 +449,46 @@ class Ucenter_Integration {
 		echo '<h2>' . __( 'Credit Exchange', 'ucenter' ) . '</h2>';
 		global $current_user;
 		wp_get_current_user();
-		$credit = get_usermeta( $current_user->ID, 'ucenter_credit' );
+		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
+		$credit = intval(get_usermeta( $current_user->ID, 'ucenter_credit' ));
 		if ( empty( $credit ) )
 			$credit = 0;
-		_e( 'Current Credits : ' );
-	       	echo $credit;
-		echo '
-			<div id="tabs">
-				<ul>
-					<li><a href="#tabs-1">1</a></li>
-					<li><a href="#tabs-2">2</a></li>
-				</ul>
-				<div id="tabs-1">
-					<p>tabs-1</p>
-				</div>
-				<div id="tabs-2">
-					<p>tabs-2</p>
-				</div>
-			</div>
-		';
+		_e( 'Current Credits : ', 'ucenter' );
+	       	echo $credit . ' ' . $this->integration_settings['ucenter_credit_unit'] . '<br />';
+		_e( 'Exchange : ', 'ucenter' );
+		echo '<br>';
+		$apps = uc_app_ls();
+		$ratio_array = array();
+		foreach ( $this->integration_settings['ucenter_credit_exchange_setting'] as $appid => $appsettings ) {
+			if ( $appid == UC_APPID ) {
+				foreach ( $appsettings as $appsetting) {
+					foreach ( $apps as $app ) {
+						if ( $app['appid'] == $appsetting['appiddesc'] ) {
+							echo "<form action='' method='post'>";
+							printf( __( 'Exchange %s <input type="text" name="amount" size=5 value="0"> %s to %s %s with ratio %s', 'ucenter'), $this->integration_settings['ucenter_credit_name'], $this->integration_settings['ucenter_credit_unit'], $app['name'], $appsetting['title'], $appsetting['ratio'] );
+							echo "<input type='hidden' name='to' value='$appsetting[creditdesc]'>";
+							echo "<input type='hidden' name='toappid' value='$appsetting[appiddesc]'>";
+							echo '<input type="submit"><br/>';
+							echo '</form>';
+							$ratio_array[implode(',',array($appsetting['creditdesc'], $appsetting['appiddesc']))] = $appsetting['ratio'];
+						}
+					}
+				}
+			}
+		}
+
+		if ( !empty( $_POST['to'] ) && !empty( $_POST['toappid'] ) ) {
+			if ( intval( $_POST['amount'] ) >= 0 && intval( $_POST['amount'] ) <= $credit ) { 
+				$ratio = $ratio_array[implode(',',array($_POST['to'], $_POST['toappid']))];
+				if ( uc_credit_exchange_request( $uid, 0, $_POST['to'], $_POST['toappid'], $_POST['amount']/$ratio) ) {
+					$credit -= $_POST['amount'];
+					update_usermeta( $current_user->ID, 'ucenter_credit', $credit);
+					_e( 'Exchange Success!', 'ucenter');
+				}	
+			}
+			else 
+				_e( 'Invalid Credit Amount!', 'ucenter');
+		}
 		echo '</div>';
 	}
 
@@ -484,6 +505,7 @@ class Ucenter_Integration {
 		$handler = $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'];
 		$current_handler = $handler . '&tab='. $_GET['tab'];
 		$action = !empty($_GET['action']) ? $_GET['action'] : '';
+		$_GET['tab'] = !empty($_GET['tab']) ? $_GET['tab'] : 'inbox';
 
 		$menu = array(
 			array( 'inbox', '', __( 'Inbox', 'ucenter' ) ),
@@ -508,10 +530,10 @@ class Ucenter_Integration {
 
 				foreach ( $data['data'] as $pm ) {
 					if ( $_GET['filter'] == 'announcepm' || $_GET['filter'] == 'systempm' ) {
-						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&pmid=$pm[pmid]'>$pm[subject]</a>";
+						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&daterange=3&pmid=$pm[pmid]'>$pm[subject]</a>";
 						$output .= "<br /> " . __( 'Content:', 'ucenter' ) . "$pm[message]</li>";
 					} else {
-						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
+						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&daterange=3&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
 						$pm['new'] && $output .= " New! ";
 						$output .= "<br /> " . __( 'Content: ', 'ucenter' ) . "$pm[message]</li>";
 					}			
@@ -635,6 +657,7 @@ class Ucenter_Integration {
 		$friends_per_page = 10;
 		$handler = $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'];
 		$action = !empty( $_GET['action'] ) ? $_GET['action'] : 'view';
+		$_GET['tab'] = !empty($_GET['tab']) ? $_GET['tab'] : 'friend';
 		
 		$menu = array(
 			array( 'friend', '', __( 'Friend', 'ucenter' ) ),
