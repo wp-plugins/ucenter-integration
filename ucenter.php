@@ -657,9 +657,9 @@ class Ucenter_Integration {
 					$output .= "
 						<form method='post' action='$current_handler&action=send'>
 						<table>
-						<tr><td>to:</td><td><input name='touser' value='$_GET[touser]'></td></tr>
-						<tr><td>subject:</td><td><input name='subject' value=''><br></td></tr>
-						<tr><td>content:</td><td><textarea name='message' cols='30' rows='5'></textarea></td></tr>
+						<tr><td>" . __( 'to', 'ucenter' ) . ":</td><td><input name='touser' value='$_GET[touser]'></td></tr>
+						<tr><td>" . __( 'subject', 'ucenter' ) . ":</td><td><input name='subject' value=''><br></td></tr>
+						<tr><td>" . __( 'content', 'ucenter' ) . ":</td><td><textarea name='message' cols='30' rows='5'></textarea></td></tr>
 						</table>
 						<input type='submit'>
 						</form>
