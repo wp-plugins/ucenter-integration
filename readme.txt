@@ -4,7 +4,7 @@ Donate link: http://chenyundong.com/
 Tags: plugin, ucenter, integration  
 Requires at least: 2.9  
 Tested up to: 2.9  
-Stable tag: 0.1  
+Stable tag: 0.2  
 
 Integrate wordpress with ucenter, which will make wordpress work with ucenter supported platform.  
 
@@ -40,7 +40,13 @@ enter plugin dir, remove ucenter-integration and reinstanll this plugin.
 
 1. Integrate wordpress with ucenter, which will make wordpress work with ucenter supported platform.  
   
-== Changelog ==  
+== Changelog == 
+= 0.2 =
+> Fix some bugs
+> add mail box
+> add customize icon
+> add friend
+> add credit
 
 = 0.1 =   
 * First version  
