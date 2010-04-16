@@ -55,7 +55,6 @@ class Ucenter_Integration {
 		add_action( 'admin_head', array( &$this, 'load_css' ) );
 
 		if ( file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
-
 			require_once dirname( __FILE__ ) . '/config.php';
 			if( !defined( 'UC_KEY' ) ) return;
 			if ( empty( $this->define_settings )) {
@@ -139,10 +138,12 @@ class Ucenter_Integration {
 			add_action( 'admin_menu', array( &$this, 'add_user_submenu_page' ) );
 
 			// Add hook for comment credit
-			add_action( 'wp_insert_comment', array ( &$this, 'comment_credit' ), 30, 2 );
+			if ( $this->integration_settings['enable_credit'] )
+				add_action( 'wp_insert_comment', array ( &$this, 'comment_credit' ), 30, 2 );
 			
 			// Use costomize icon
-			add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
+			if ( $this->integration_settings['enable_customize_icon'] )
+				add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
 		}
 	}
 
@@ -178,6 +179,16 @@ class Ucenter_Integration {
 	function load_css() {
 		echo "
 		<style type='text/css'>
+		#icon_list {
+			float:left;
+			border-right: 2px dotted;
+			width:220px;
+
+		}
+		#icon_show {
+			float:left;
+			margin:10px;
+		}
 		.ucenter-ul li {
 			float:left;
 			margin-left:10px;
@@ -192,30 +203,30 @@ class Ucenter_Integration {
 	function comment_credit( $id, $comment ) {
 		$credit = get_usermeta( $comment->user_id, 'ucenter_credit' );
 		$credit += $this->integration_settings['ucenter_credit_per_comment'];
-		update_usermeta($comment->user_id, 'ucenter_credit', $credit);
+		update_usermeta( $comment->user_id, 'ucenter_credit', $credit );
 	}
 
 	function get_avatar( $avatar, $id_or_email, $size, $default, $alt ) {
 		$user_login = '';
-		if ( is_numeric($id_or_email) ) {
+		if ( is_numeric( $id_or_email ) ) {
 			$id = (int) $id_or_email;
-			$user = get_userdata($id);
+			$user = get_userdata( $id );
 			if ( $user )
 				$user_login = $user->user_login;
-		} elseif ( is_object($id_or_email) ) {
-			if ( isset($id_or_email->comment_type) && '' != $id_or_email->comment_type && 'comment' != $id_or_email->comment_type )
-				return false; // No avatar for pingbacks or trackbacks
+		} elseif ( is_object( $id_or_email ) ) {
+			if ( isset( $id_or_email->comment_type ) && '' != $id_or_email->comment_type && 'comment' != $id_or_email->comment_type )
+				return false; 
 
-			if ( !empty($id_or_email->user_id) ) {
+			if ( !empty( $id_or_email->user_id ) ) {
 				$id = (int) $id_or_email->user_id;
-				$user = get_userdata($id);
-				if ( $user)
+				$user = get_userdata( $id );
+				if ( $user )
 					$user_login = $user->user_login;
 			}                 
 		}
 		list( $uid, $_, $_ ) = uc_get_user( $user_login );
 		if ( uc_check_avatar( $uid, 'small' ) > 0 ) {
-			$src = UC_API . "/avatar.php?uid={$uid}&size=small&random=" . rand();
+			$src = UC_API . "/avatar.php?uid=$uid&size=small&random=" . rand();
 			$avatar = "<img alt='{$alt}' src='{$src}' class='avatar avatar-{$size} photo avatar-default' height='{$size}' width='{$size}' />";
 		}
 		return $avatar;
@@ -425,29 +436,35 @@ class Ucenter_Integration {
 
 	function add_user_submenu_page() {
 			// add user submenu page
-			add_submenu_page( 'users.php', __( 'Customize Icon', 'ucenter' ) , __( 'Customize Icon', 'ucenter' ), 'read', 'ucenter-customize-icon', array( &$this, 'submenu_customize_icon' ) );
+			if ( $this->integration_settings['ucenter_enable_mail_box'] )
+				add_submenu_page( 'users.php', __( 'Mail Box', 'ucenter' ) , __( 'Mail Box', 'ucenter' ), 'read', 'ucenter-mail-box', array( &$this, 'submenu_mail_box' ) );
 
-			add_submenu_page( 'users.php', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
+			if ( $this->integration_settings['ucenter_enable_customize_icon'] )
+				add_submenu_page( 'users.php', __( 'Customize Icon', 'ucenter' ) , __( 'Customize Icon', 'ucenter' ), 'read', 'ucenter-customize-icon', array( &$this, 'submenu_customize_icon' ) );
 
-			add_submenu_page( 'users.php', __( 'Mail Box', 'ucenter' ) , __( 'Mail Box', 'ucenter' ), 'read', 'ucenter-mail-box', array( &$this, 'submenu_mail_box' ) );
 
-			add_submenu_page( 'users.php', __( 'Friend', 'ucenter' ) , __( 'Friend', 'ucenter' ), 'read', 'ucenter-friend', array( &$this, 'submenu_frienD' ) );
+			if ( $this->integration_settings['ucenter_enable_friend'] )
+				add_submenu_page( 'users.php', __( 'Friend', 'ucenter' ) , __( 'Friend', 'ucenter' ), 'read', 'ucenter-friend', array( &$this, 'submenu_frienD' ) );
+
+			if ( $this->integration_settings['ucenter_enable_credit'] )
+				add_submenu_page( 'users.php', __( 'Credit Exchange', 'ucenter' ) , __( 'Credit Exchange', 'ucenter' ), 'read', 'ucenter-credit-exchange', array( &$this, 'submenu_credit_exchange' ) );
 	}
 
 	function submenu_customize_icon() {
-		echo '<div class=wrap>';
+		echo '<div class="wrap">';
 		echo '<h2>' . __( 'Customize Icon', 'ucenter' ) . '</h2>';
 		global $current_user;
 		wp_get_current_user();
 		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
+
 		$icons = array( 'big' => __( 'Big Icon', 'ucenter' ), 'middle' => __( 'Middle Icon', 'ucenter' ), 'small' => __( 'Small Icon', 'ucenter' ) );
-		echo '<div style="float:left;border-right: 2px dotted;width:220px;">';
+		echo '<div id="icon_list">';
 		foreach ( $icons as $size => $name ) {
 			if ( uc_check_avatar( $uid, $size ) > 0 ) {
-				printf( '<div style="margin:10px;">%s<br /><img src="%s/avatar.php?uid=%s&size=%s&random=%s" /></div>', $name, UC_API, $uid, $size, rand() );
+				echo "$name<br /><img src='" . UC_API . "/avatar.php?uid=$uid&size=$size&random=" . rand() . "' /><br />";
 			}
 		}
-		echo '</div><div style="margin:10px;float:left">';
+		echo '</div><div id="icon_show">';
 		$html = uc_avatar( $uid );
 		echo $html;
 		echo '</div></div>';
@@ -459,25 +476,23 @@ class Ucenter_Integration {
 		global $current_user;
 		wp_get_current_user();
 		list( $uid, $_, $_ ) = uc_get_user( $current_user->user_login );
-		$credit = intval(get_usermeta( $current_user->ID, 'ucenter_credit' ));
+		$credit = intval( get_usermeta( $current_user->ID, 'ucenter_credit' ) );
 		if ( empty( $credit ) )
 			$credit = 0;
-		_e( 'Current Credits : ', 'ucenter' );
-	       	echo $credit . ' ' . $this->integration_settings['ucenter_credit_unit'] . '<br />';
-		_e( 'Exchange : ', 'ucenter' );
-		echo '<br>';
+		echo __( 'Current Credits : ', 'ucenter' ) . $credit . ' ' . $this->integration_settings['ucenter_credit_unit'] . '<br />';
+		echo __( 'Exchange : ', 'ucenter' ) . '<br />';
 		$apps = uc_app_ls();
 		$ratio_array = array();
 		foreach ( $this->integration_settings['ucenter_credit_exchange_setting'] as $appid => $appsettings ) {
 			if ( $appid == UC_APPID ) {
-				foreach ( $appsettings as $appsetting) {
+				foreach ( $appsettings as $appsetting ) {
 					foreach ( $apps as $app ) {
 						if ( $app['appid'] == $appsetting['appiddesc'] ) {
-							echo "<form action='' method='post'>";
+							echo '<form action="" method="post">';
 							printf( __( 'Exchange %s <input type="text" name="amount" size=5 value="0"> %s to %s %s with ratio %s', 'ucenter'), $this->integration_settings['ucenter_credit_name'], $this->integration_settings['ucenter_credit_unit'], $app['name'], $appsetting['title'], $appsetting['ratio'] );
 							echo "<input type='hidden' name='to' value='$appsetting[creditdesc]'>";
 							echo "<input type='hidden' name='toappid' value='$appsetting[appiddesc]'>";
-							echo '<input type="submit"><br/>';
+							echo '<input type="submit"><br />';
 							echo '</form>';
 							$ratio_array[implode(',',array($appsetting['creditdesc'], $appsetting['appiddesc']))] = $appsetting['ratio'];
 						}
@@ -491,12 +506,12 @@ class Ucenter_Integration {
 				$ratio = $ratio_array[implode(',',array($_POST['to'], $_POST['toappid']))];
 				if ( uc_credit_exchange_request( $uid, 0, $_POST['to'], $_POST['toappid'], $_POST['amount']/$ratio) ) {
 					$credit -= $_POST['amount'];
-					update_usermeta( $current_user->ID, 'ucenter_credit', $credit);
-					_e( 'Exchange Success!', 'ucenter');
+					update_usermeta( $current_user->ID, 'ucenter_credit', $credit );
+					_e( 'Exchange Success!', 'ucenter' );
 				}	
 			}
 			else 
-				_e( 'Invalid Credit Amount!', 'ucenter');
+				_e( 'Invalid Credit Amount!', 'ucenter' );
 		}
 		echo '</div>';
 	}
@@ -513,8 +528,8 @@ class Ucenter_Integration {
 		$max_msg_length = 100;
 		$handler = $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'];
 		$current_handler = $handler . '&tab='. $_GET['tab'];
-		$action = !empty($_GET['action']) ? $_GET['action'] : '';
-		$_GET['tab'] = !empty($_GET['tab']) ? $_GET['tab'] : 'inbox';
+		$action = !empty( $_GET['action'] ) ? $_GET['action'] : '';
+		$_GET['tab'] = !empty( $_GET['tab'] ) ? $_GET['tab'] : 'inbox';
 
 		$menu = array(
 			array( 'inbox', '', __( 'Inbox', 'ucenter' ) ),
@@ -526,8 +541,8 @@ class Ucenter_Integration {
 		);
 		
 		echo '<ul class="ucenter-ul">';
-		foreach ( $menu as $item) {
-			printf( '<li><a href="%s&tab=%s&%s" %s>%s</a></li>', $handler, $item[0], $item[1], $_GET['tab'] == $item[0] ? 'class="current"' : '', $item[2] );
+		foreach ( $menu as $item ) {
+			printf( "<li><a href='$handler&tab=$item[0]&$item[1]' %s>$item[2]</a></li>", $_GET['tab'] == $item[0] ? 'class="current"' : '');
 		}
 		echo '</ul><br /><hr />';
 		switch ( $action ) {
@@ -540,19 +555,19 @@ class Ucenter_Integration {
 				foreach ( $data['data'] as $pm ) {
 					if ( $_GET['filter'] == 'announcepm' || $_GET['filter'] == 'systempm' ) {
 						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&daterange=3&pmid=$pm[pmid]'>$pm[subject]</a>";
-						$output .= "<br /> " . __( 'Content:', 'ucenter' ) . "$pm[message]</li>";
+						$output .= '<br /> ' . __( 'Content:', 'ucenter' ) . $pm[message] . '</li>';
 					} else {
 						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&daterange=3&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
 						$pm['new'] && $output .= " New! ";
-						$output .= "<br /> " . __( 'Content: ', 'ucenter' ) . "$pm[message]</li>";
+						$output .= '<br /> ' . __( 'Content: ', 'ucenter' ) . $pm[message] . '</li>';
 					}			
 				}
 				
 				$page_n = $data['count'] / $pm_per_page; 
-				if ( $page_n > 1) {
+				if ( $page_n > 1 ) {
 					$output .= '<hr / ><br />';
 					$output .= __( 'Page ', 'ucenter' );
-					for ( $i = 1; $i <= $page_n; $i++) {
+					for ( $i = 1; $i <= $page_n; $i++ ) {
 						$output .= " <a href='$current_handler&pageid=$i'>$i</a> ";
 					}
 				}
@@ -570,21 +585,21 @@ class Ucenter_Integration {
 				);
 
 				echo '<ul class="ucenter-ul">';
-				foreach ( $dateranges as $item) {
-					printf( '<li><a href="%s&action=view&touid=%s&pmid=%s&subtab=%s&daterange=%s" %s>%s</a></li>', $current_handler, $_GET['touid'], $pmid, $item[0], $item[1], $_GET['subtab'] == $item[0] ? 'class="current"' : '', $item[2] );
+				foreach ( $dateranges as $item ) {
+					printf( "<li><a href='$current_handler&action=view&touid=$_GET[touid]&pmid=$pmid&subtab=$item[0]&daterange=$item[1]' %s>$item[2]</a></li>", $_GET['subtab'] == $item[0] ? 'class="current"' : '' );
 				}
 				echo '</ul><br /><hr />';
 
-				foreach($data as $pm) {
+				foreach ( $data as $pm ) {
 					$output .= "<b>$pm[msgfrom]</b>";
 					if ( $_GET['touid'] == $pm['msgfromid'] ) {
 						$output .= "<a href='$current_handler&action=addblacklist&user=$pm[msgfrom]'>" . __( ' [ Ban This User ] ', 'ucenter' ) . "</a>";
 					}
-					$output .= ' ( ' . gmdate('Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600) . ' ) ';
+					$output .= ' ( ' . gmdate('Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ' ) ';
 					$output .= "<br />$pm[message]<br /><br />";
 				}
 				
-				if(empty($_GET['pmid'])) {
+				if ( empty( $_GET['pmid'] ) ) {
 					$output .= "
 						<a href='$current_handler&action=delete&uid=$_GET[touid]'>" . __( 'Delete All Message From This user', 'ucenter' ) . "</a><br />
 						Reply:
@@ -614,7 +629,7 @@ class Ucenter_Integration {
 				break;
 			case 'blacklist':
 				$data = explode( ',', uc_pm_blackls_get( $uid ) );
-				foreach ($data as $ls ) {
+				foreach ( $data as $ls ) {
 					$ls && $output .= "$ls <a href='$current_handler&action=deleteblacklist&user=$ls'>" . __( 'Remove', 'ucenter' ) . "</a>";
 				}
 				$output .= "
@@ -634,9 +649,9 @@ class Ucenter_Integration {
 						$isusername = 0;
 					}
 					if( uc_pm_send( $uid, $msgto, $_POST['subject'], $_POST['message'], 1, 0, $isusername ) ) {
-						$output .= __( 'Sended', 'ucenter');
+						$output .= __( 'Sended', 'ucenter' );
 					} else {
-						$output .= __( 'Failed', 'ucenter');
+						$output .= __( 'Failed', 'ucenter' );
 					}
 				} else {
 					$output .= "
@@ -675,7 +690,7 @@ class Ucenter_Integration {
 		);
 		echo '<ul class="ucenter-ul">';
 		foreach ( $menu as $item) {
-			printf( '<li><a href="%s&tab=%s&%s" %s>%s</a></li>', $handler, $item[0], $item[1], $_GET['tab'] == $item[0] ? 'class="current"' : '', $item[2] );
+			printf( "<li><a href='$handler&tab=$item[0]&$item[1]' %s>$item[2]</a></li>", $_GET['tab'] == $item[0] ? 'class="current"' : '' );
 		}
 		echo '</ul><br /><hr />';
 
@@ -700,13 +715,13 @@ class Ucenter_Integration {
 						echo $_POST['newfriend'] . __( ' has been added to your list!', 'ucenter' ) . '<br /><br />';
 				}
 				
-				echo '<form method="post" action="' . $handler . '&action=add&tab=' . $_GET['tab'] . '">';
-				echo '<table>';
-				echo '<tr><td>' . __( 'Add Friend', 'ucenter' ) . '</td><td><input name="newfriend"></td>';
-				echo '<tr><td>' . __( 'Description', 'ucenter' ) . '</td><td><input name="newcomment"></td>';
-				echo '</table>';
-				echo '<input name="submit" type="submit"> ';
-				echo '</form>';
+				echo "<form method=post' action='$handler&action=add&tab=$_GET[tab]'>;
+					<table>
+						<tr><td>" . __( 'Add Friend', 'ucenter' ) . '</td><td><input name="newfriend"></td></tr>
+						<tr><td>' . __( 'Description', 'ucenter' ) . '</td><td><input name="newcomment"></td></tr>
+					</table>
+					<input name="submit" type="submit">
+					</form>';
 				break;
 			case 'delete':
 				if ( !is_array( $_GET['delete'] ) ) {
@@ -783,7 +798,7 @@ class Ucenter_Integration {
 	}
 
 	function submenu_integration_settings() {
-		$page_options = 'ucenter_password_override,ucenter_hack_core,ucenter_credit_name,ucenter_credit_unit,ucenter_credit_per_comment,ucenter_credit_per_post';
+		$page_options = 'ucenter_password_override,ucenter_hack_core,ucenter_credit_name,ucenter_credit_unit,ucenter_credit_per_comment,ucenter_credit_per_post,ucenter_enable_mail_box,ucenter_enable_customize_icon,ucenter_enable_friend,ucenter_enable_credit';
 		$options = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
 		if ( $_POST['page_options'] )
@@ -814,38 +829,56 @@ class Ucenter_Integration {
 
 		<table>
 			<tr>
-				<td>Password Override</td>
+				<td width='150px'><?php _e( 'Password Override', 'ucenter' ) ?></td>
 				<td><input type="checkbox" name="ucenter_password_override" value="1" <?php checked( '1', $options['ucenter_password_override'] ); ?> /></td>
 			</tr>
 			<tr><td></td><td><?php _e( '<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, user\'s password in ucenter will override that in wordpress when encounter pair(user, password) confliction between ucenter and wordpress. If disable this option, confliction will make login fail.<strong><br >WARNINGS: OPERATION WHEN YOU CLEARLY UNDERSTAND ITS MEANING!</strong>', 'ucenter' ) ?></td></tr>
 
 			<tr>
-				<td>Hack Core</td>
+				<td><?php _e( 'Hack Core', 'ucenter' ) ?></td>
 				<td><input type="checkbox" name="ucenter_hack_core" value="1" <?php checked( '1', $options['ucenter_hack_core'] ); ?> /></td>
 			</tr>
 			<tr><td></td><td><?php printf( __( '<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, ucenter integration plugin will hack wp core file "%s" to add some filter that isn\'t supplied by offical wp in order to make plugin work with entire functions. If disable this option, changes of user infomation will not go into ucenter when register/add/edit user in wordpress.', 'ucenter' ), ABSPATH . WPINC . '/registration.php' ) ?></td></tr>
 
 			<tr>
-				<td>Credit Name</td>
+				<td><?php _e( 'Credit Name', 'ucenter' ) ?></td>
 				<td><input type="text" name="ucenter_credit_name" value="<?php echo $options['ucenter_credit_name']; ?>"/></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
 			<tr>
-				<td>Credit Unit</td>
+				<td><?php _e( 'Credit Unit', 'ucenter' ) ?></td>
 				<td><input type="test" name="ucenter_credit_unit" value="<?php echo $options['ucenter_credit_unit']; ?>"/></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
 			<tr>
-				<td>Credit Per Comment</td>
+				<td><?php _e( 'Credit Per Comment', 'ucenter' ) ?></td>
 				<td><input type="test" name="ucenter_credit_per_comment" value="<?php echo $options['ucenter_credit_per_comment']; ?>"/></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
 			<tr>
-				<td>Credit Per Post</td>
-				<td><input type="test" name="ucenter_credit_per_post" value="<?php echo $options['ucenter_credit_per_post']; ?>"/></td>
+				<td><?php _e( 'Enable Mail Box', 'ucenter' ) ?></td>
+				<td><input type="checkbox" name="ucenter_enable_mail_box" value="1" <?php checked( '1', $options['ucenter_enable_mail_box'] ); ?> /></td>
+			</tr>
+			<tr><td></td><td></td></tr>
+
+			<tr>
+				<td><?php _e( 'Enable Customize Icon', 'ucenter' ) ?></td>
+				<td><input type="checkbox" name="ucenter_enable_customize_icon" value="1" <?php checked( '1', $options['ucenter_enable_customize_icon'] ); ?> /></td>
+			</tr>
+			<tr><td></td><td></td></tr>
+
+			<tr>
+				<td><?php _e( 'Enable Friend', 'ucenter' ) ?></td>
+				<td><input type="checkbox" name="ucenter_enable_friend" value="1" <?php checked( '1', $options['ucenter_enable_friend'] ); ?> /></td>
+			</tr>
+			<tr><td></td><td></td></tr>
+
+			<tr>
+				<td><?php _e( 'Enable Credit', 'ucenter' ) ?></td>
+				<td><input type="checkbox" name="ucenter_enable_credit" value="1" <?php checked( '1', $options['ucenter_enable_credit'] ); ?> /></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
