@@ -2,14 +2,14 @@
 /**
  * @package Ucenter
  * @author ychen
- * @version 0.2
+ * @version 0.3
  */
 /*
 Plugin Name: Ucenter
 Plugin URI: http://chenyundong.com
 Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms.
 Author: ychen
-Version: 0.2
+Version: 0.3
 Author URI: http://chenyundong.com
 */
 
