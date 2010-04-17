@@ -138,11 +138,11 @@ class Ucenter_Integration {
 			add_action( 'admin_menu', array( &$this, 'add_user_submenu_page' ) );
 
 			// Add hook for comment credit
-			if ( $this->integration_settings['enable_credit'] )
+			if ( $this->integration_settings['ucenter_enable_credit'] )
 				add_action( 'wp_insert_comment', array ( &$this, 'comment_credit' ), 30, 2 );
 			
 			// Use costomize icon
-			if ( $this->integration_settings['enable_customize_icon'] )
+			if ( $this->integration_settings['ucenter_enable_customize_icon'] )
 				add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
 		}
 	}
