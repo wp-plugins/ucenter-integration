@@ -715,7 +715,7 @@ class Ucenter_Integration {
 						echo $_POST['newfriend'] . __( ' has been added to your list!', 'ucenter' ) . '<br /><br />';
 				}
 				
-				echo "<form method=post' action='$handler&action=add&tab=$_GET[tab]'>;
+				echo "<form method=post' action='$handler&action=add&tab=$_GET[tab]'>
 					<table>
 						<tr><td>" . __( 'Add Friend', 'ucenter' ) . '</td><td><input name="newfriend"></td></tr>
 						<tr><td>' . __( 'Description', 'ucenter' ) . '</td><td><input name="newcomment"></td></tr>
