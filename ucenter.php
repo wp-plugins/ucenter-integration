@@ -480,7 +480,7 @@ class Ucenter_Integration {
 		if ( empty( $credit ) )
 			$credit = 0;
 		echo __( 'Current Credits : ', 'ucenter' ) . $credit . ' ' . $this->integration_settings['ucenter_credit_unit'] . '<br />';
-		echo __( 'Exchange : ', 'ucenter' ) . '<br />';
+		echo '<br />';
 		$apps = uc_app_ls();
 		$ratio_array = array();
 		foreach ( $this->integration_settings['ucenter_credit_exchange_setting'] as $appid => $appsettings ) {
