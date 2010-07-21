@@ -374,10 +374,13 @@ class Ucenter_Integration {
 
 	function register_user( $username, $password, $email ) {
 		$uid = uc_user_register( $username, $password, $email );
-		if ( $uid > 0 )
-			return true;
-		else
-			return false;
+		if ( $uid < 0 ) {
+			list( $id, $_, $_, $_ ) = uc_user_login( $username, $password );
+			if ( $id < 0 ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	function registration_errors( $errors, $user_login, $user_email ) {
