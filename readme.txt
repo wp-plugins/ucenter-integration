@@ -47,13 +47,17 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 
 == Screenshots ==
 
-0. setting
-1. message component
-2. friend component
-3. credit component
-4. avatar component
+1. setting
+2. message component
+3. friend component
+4. credit component
+5. avatar component
 
 == Changelog ==
+= 0.3.2 =
+> fix sending chars before sending header bug  
+> fix activated_plugin hook
+
 = 0.3.2 =
 > fix sending chars before sending header bug  
 > fix permission deny bug

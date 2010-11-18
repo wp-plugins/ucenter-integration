@@ -13,8 +13,9 @@ Version: 0.3.2
 Author URI: http://chenyundong.com
 */
 
-define( 'UCENTER_DEFINE_SETTING_NAME', 'plugin_ucenter_define_settings' );
-define( 'UCENTER_INTEGRATION_SETTING_NAME', 'plugin_ucenter_integration_settings' );
+if ( !defined('UCENTER_DEFINE_SETTING_NAME') ) :
+define('UCENTER_DEFINE_SETTING_NAME', 'plugin_ucenter_define_settings');
+define('UCENTER_INTEGRATION_SETTING_NAME', 'plugin_ucenter_integration_settings');
 
 class Ucenter_Integration {
 	var $define_settings;
@@ -237,10 +238,13 @@ class Ucenter_Integration {
 			$this->hack_core( 'remove' );
 			delete_option( UCENTER_DEFINE_SETTING_NAME );
 			delete_option( UCENTER_INTEGRATION_SETTING_NAME );
-			if ( is_writable( dirname( __FILE__ ) ) ) {
+			if ( is_writable( dirname( __FILE__ ) ) && file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
 				unlink( dirname( __FILE__ ) . '/config.php' );
 			}
 		}
+	}
+
+	function activated_plugin( $plugin ) {
 	}
 
 	function load_dialect() {
@@ -898,5 +902,5 @@ class Ucenter_Integration {
 }
 
 $ucenter_integration = new Ucenter_Integration;
-
+endif;
 ?>
