@@ -54,7 +54,7 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 5. avatar component
 
 == Changelog ==
-= 0.3.2 =
+= 0.3.3 =
 > fix sending chars before sending header bug  
 > fix activated_plugin hook
 
