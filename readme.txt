@@ -4,7 +4,7 @@ Donate link: http://chenyundong.com/
 Tags: plugin, ucenter, integration
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 0.3.1
+Stable tag: 0.3.2
 
 Integrate wordpress with ucenter, which will make wordpress work with ucenter supported platform.
 
@@ -54,6 +54,10 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 4. avatar component
 
 == Changelog ==
+= 0.3.1 =
+> fix sending chars before sending header bug
+> fix permission deny bug
+
 = 0.3.1 =
 > fix ucenter user can not login wordpress bug
 

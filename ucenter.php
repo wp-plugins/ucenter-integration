@@ -7,9 +7,9 @@
 /*
 Plugin Name: Ucenter
 Plugin URI: http://chenyundong.com
-Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3.1. If you want a supported version with beauty UI and more functions, please purchase charged version with 50 RMB. See detailed information on my blog. 
+Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3. If you want a supported version with beauty UI and more functions, please purchase charged version. See detailed information on my blog.
 Author: ychen
-Version: 0.3.1
+Version: 0.3.2
 Author URI: http://chenyundong.com
 */
 
@@ -252,13 +252,13 @@ class Ucenter_Integration {
 		if ( !current_user_can( 'manage_options' )  ) return;
 		if ( !file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
 			echo "
-			<div class='updated'><p>" . sprintf( __( 'Ucenter Integration: Ucenter integration plugin is active now. But you must finish all related <a href="%s">settings</a> to make it work correctly.', 'ucenter' ), "admin.php?page=ucenter-integration" ) . "</p></div>
+			<div class='updated'><p>" . sprintf( __( 'Ucenter Integration: Ucenter integration plugin is active now. But you must finish all related <a href="%s">settings</a> to make it work correctly.', 'ucenter' ), "admin.php?page=ucenter-define-settings" ) . "</p></div>
 			";
 		} else {
 			require_once dirname( __FILE__ ) . '/config.php' ;
 			if ( !defined( 'UC_KEY' ) || UC_KEY === '' ) {
 				echo "
-				<div class='updated'><p>" . sprintf( __( 'Ucenter Integration: Ucenter integration plugin is active now. But you must finish all related <a href="%s">settings</a> to make it work correctly.', 'ucenter' ), "admin.php?page=ucenter-integration" ) . "</p></div>
+				<div class='updated'><p>" . sprintf( __( 'Ucenter Integration: Ucenter integration plugin is active now. But you must finish all related <a href="%s">settings</a> to make it work correctly.', 'ucenter' ), "admin.php?page=ucenter-define-settings" ) . "</p></div>
 				";
 			}
 		}
@@ -360,8 +360,8 @@ class Ucenter_Integration {
 	}
 
 	function clear_cookie() {
-		$this->sync_login_cookie = stripcslashes( $_COOKIE['sync_login'] );
-		$this->sync_logout_cookie = stripcslashes( $_COOKIE['sync_logout'] );
+		$this->sync_login_cookie = stripcslashes( array_key_exists('sync_login', $_COOKIE) ? $_COOKIE['sync_login'] : '' );
+		$this->sync_logout_cookie = stripcslashes( array_key_exists('sync_logout', $_COOKIE) ? $_COOKIE['sync_logout'] : '');
 		setcookie( 'sync_login', '', 0, '/' );
 		setcookie( 'sync_logout', '', 0, '/' );
 	}
