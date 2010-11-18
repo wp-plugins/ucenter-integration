@@ -47,7 +47,7 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 
 == Screenshots ==
 
-1. setting
+0. setting
 1. message component
 2. friend component
 3. credit component
@@ -55,7 +55,7 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 
 == Changelog ==
 = 0.3.2 =
-> fix sending chars before sending header bug
+> fix sending chars before sending header bug  
 > fix permission deny bug
 
 = 0.3.1 =
@@ -65,21 +65,21 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 > fix bugs
 
 = 0.2 =
-> Fix some bugs
-> add mail box
-> add customize icon
-> add friend
-> add credit
+> Fix some bugs  
+> add mail box  
+> add customize icon  
+> add friend  
+> add credit  
 
 = 0.1 =
-* First version
-> User can synlogin all apps that has been integrated into ucenter
-> When user login other apps that has been integrated into ucenter, user will auto login wordpress
-> When user does not exists in ucenter, user will be auto registered in ucenter when user login wordpress
+> First version  
+> User can synlogin all apps that has been integrated into ucenter  
+> When user login other apps that has been integrated into ucenter, user will auto login wordpress  
+> When user does not exists in ucenter, user will be auto registered in ucenter when user login wordpress  
 
 == Upgrade Notice ==
 
-= 0.3.1 =
+= 0.3 =
 last maintained free version. If you want a beauty version with more functions, please visit http://chenyundong.com to get detailed information.
 
 = 0.1 =
