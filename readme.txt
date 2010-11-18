@@ -3,8 +3,8 @@ Contributors: ychen
 Donate link: http://chenyundong.com/
 Tags: plugin, ucenter, integration
 Requires at least: 2.9
-Tested up to: 3.0
-Stable tag: 0.3.2
+Tested up to: 3.0.1
+Stable tag: 0.3.3
 
 Integrate wordpress with ucenter, which will make wordpress work with ucenter supported platform.
 
