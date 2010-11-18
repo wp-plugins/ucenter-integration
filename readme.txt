@@ -54,7 +54,7 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 4. avatar component
 
 == Changelog ==
-= 0.3.1 =
+= 0.3.2 =
 > fix sending chars before sending header bug
 > fix permission deny bug
 
