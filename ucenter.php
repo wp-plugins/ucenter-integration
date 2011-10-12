@@ -330,7 +330,8 @@ class Ucenter_Integration {
 				// if user does not exist, create it
 				$user_id = wp_create_user( $username, $password, $email );
 
-				if ( !$user_id )
+				if ( is_a( $user, 'WP_Error' ) )
+					$errors->add( $user_id->get_error_code(), $user_id->get_error_message() );
 					$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you in wordpress... please contact the <a href="mailto:%s">webmaster</a> !', 'ucenter' ), get_option( 'admin_email' ) ) );
 
 			} elseif ( !wp_check_password( $password, $userdata->user_pass, $userdata->ID ) ) {
