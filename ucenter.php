@@ -7,15 +7,35 @@
 /*
 Plugin Name: Ucenter
 Plugin URI: http://chenyundong.com
-Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3. If you want a supported version with beauty UI and more functions, please purchase charged version. See detailed information on my blog.
+Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3. If you want a supported version with beauty UI and more functions, please purchase charged version. See detailed information on my blog: <a href="http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/">http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/</a>
 Author: ychen
-Version: 0.3.3
+Version: 0.3.4
 Author URI: http://chenyundong.com
 */
 
 if ( !defined('UCENTER_DEFINE_SETTING_NAME') ) :
 define('UCENTER_DEFINE_SETTING_NAME', 'plugin_ucenter_define_settings');
 define('UCENTER_INTEGRATION_SETTING_NAME', 'plugin_ucenter_integration_settings');
+
+add_filter( 'sanitize_user', 'ucenter_sanitize_user', 3, 3 );
+function ucenter_sanitize_user( $username, $raw_username, $strict ) {
+	$username = $raw_username;
+	$username = wp_strip_all_tags( $username );
+
+	// Kill octets
+	$username = preg_replace( '|%([a-fA-F0-9][a-fA-F0-9])|', '', $username );
+	$username = preg_replace( '/&.+?;/', '', $username ); // Kill entities
+
+	// If strict, reduce to ASCII and chinese for max portability.
+	if ( $strict )
+		$username = preg_replace( '|[^a-z0-9 _.\-@\x80-\xFF]|i', '', $username );
+
+	$username = trim( $username );
+	// Consolidate contiguous whitespace
+	$username = preg_replace( '|\s+|', ' ', $username );
+
+	return $username;
+}
 
 class Ucenter_Integration {
 	var $define_settings;
@@ -141,7 +161,7 @@ class Ucenter_Integration {
 			// Add hook for comment credit
 			if ( $this->integration_settings['ucenter_enable_credit'] )
 				add_action( 'wp_insert_comment', array ( &$this, 'comment_credit' ), 30, 2 );
-			
+
 			// Use costomize icon
 			if ( $this->integration_settings['ucenter_enable_customize_icon'] )
 				add_filter( 'get_avatar', array( &$this, 'get_avatar' ), 100, 5);
@@ -195,10 +215,10 @@ class Ucenter_Integration {
 			margin-left:10px;
 		}
 		.ucenter-ul .current {
-			border: 1px solid;	
+			border: 1px solid;
 			padding:5px;
 		}
-		</style>"; 	
+		</style>";
 	}
 
 	function comment_credit( $id, $comment ) {
@@ -216,14 +236,14 @@ class Ucenter_Integration {
 				$user_login = $user->user_login;
 		} elseif ( is_object( $id_or_email ) ) {
 			if ( isset( $id_or_email->comment_type ) && '' != $id_or_email->comment_type && 'comment' != $id_or_email->comment_type )
-				return false; 
+				return false;
 
 			if ( !empty( $id_or_email->user_id ) ) {
 				$id = (int) $id_or_email->user_id;
 				$user = get_userdata( $id );
 				if ( $user )
 					$user_login = $user->user_login;
-			}                 
+			}
 		}
 		list( $uid, $_, $_ ) = uc_get_user( $user_login );
 		if ( uc_check_avatar( $uid, 'small' ) > 0 ) {
@@ -235,7 +255,6 @@ class Ucenter_Integration {
 
 	function deactivated_plugin( $plugin ) {
 		if ( $plugin == plugin_basename(__FILE__) ) {
-			$this->hack_core( 'remove' );
 			delete_option( UCENTER_DEFINE_SETTING_NAME );
 			delete_option( UCENTER_INTEGRATION_SETTING_NAME );
 			if ( is_writable( dirname( __FILE__ ) ) && file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
@@ -265,12 +284,6 @@ class Ucenter_Integration {
 				<div class='updated'><p>" . sprintf( __( 'Ucenter Integration: Ucenter integration plugin is active now. But you must finish all related <a href="%s">settings</a> to make it work correctly.', 'ucenter' ), "admin.php?page=ucenter-define-settings" ) . "</p></div>
 				";
 			}
-		}
-
-		if ( $this->integration_settings['ucenter_hack_core'] && !is_writable( ABSPATH . WPINC ) ) {
-			echo "
-			<div class='updated'><p><strong>" . sprintf( __( 'Ucenter Integration: You have enabled hack core flag but %s is not writable.', 'ucenter' ), ABSPATH . WPINC ) . "</p></div>
-			";
 		}
 
 		if ( !is_writable( dirname( __FILE__ ) ) ) {
@@ -398,7 +411,7 @@ class Ucenter_Integration {
 		return $errors;
 	}
 
-	function update_user( $error, $update, $user ) {
+	function update_user( $errors, $update, $user ) {
 		if ( $update ) {
 			if ( $data = uc_get_user( $user->user_login ) ) {
 				$result = uc_user_edit( $user->user_login, '', $user->user_pass, $user->user_email, 1 );
@@ -432,9 +445,9 @@ class Ucenter_Integration {
 
 	function add_menu_page() {
 			// add admin menu
-			add_menu_page( __( 'Ucenter', 'ucenter' ), __( 'Ucenter', 'ucenter' ), 'read', 'ucenter-box', '' );
+			add_menu_page( __( 'Ucenter', 'ucenter' ), __( 'Ucenter', 'ucenter' ), 'administrator', 'ucenter-box', '' );
 
-			add_submenu_page( 'ucenter-box', __( 'Introduction', 'ucenter' ) , __( 'Introduction', 'ucenter' ), 'read', 'ucenter-box', array( &$this, 'submenu_introduction' ) );
+			add_submenu_page( 'ucenter-box', __( 'Introduction', 'ucenter' ) , __( 'Introduction', 'ucenter' ), 'administrator', 'ucenter-box', array( &$this, 'submenu_introduction' ) );
 
 			add_submenu_page( 'ucenter-box', __( 'Define Settings', 'ucenter' ) , __( 'Define Settings', 'ucenter' ), 'administrator', 'ucenter-define-settings', array( &$this, 'submenu_define_settings' ) );
 
@@ -509,15 +522,15 @@ class Ucenter_Integration {
 		}
 
 		if ( !empty( $_POST['to'] ) && !empty( $_POST['toappid'] ) ) {
-			if ( intval( $_POST['amount'] ) >= 0 && intval( $_POST['amount'] ) <= $credit ) { 
+			if ( intval( $_POST['amount'] ) >= 0 && intval( $_POST['amount'] ) <= $credit ) {
 				$ratio = $ratio_array[implode(',',array($_POST['to'], $_POST['toappid']))];
 				if ( uc_credit_exchange_request( $uid, 0, $_POST['to'], $_POST['toappid'], $_POST['amount']/$ratio) ) {
 					$credit -= $_POST['amount'];
 					update_usermeta( $current_user->ID, 'ucenter_credit', $credit );
 					_e( 'Exchange Success!', 'ucenter' );
-				}	
+				}
 			}
-			else 
+			else
 				_e( 'Invalid Credit Amount!', 'ucenter' );
 		}
 		echo '</div>';
@@ -546,7 +559,7 @@ class Ucenter_Integration {
 			array( 'send', 'action=send', __( 'Send Message', 'ucenter' ) ),
 			array( 'blacklist', 'action=blacklist', __( 'Black List', 'ucenter' ) ),
 		);
-		
+
 		echo '<ul class="ucenter-ul">';
 		foreach ( $menu as $item ) {
 			printf( "<li><a href='$handler&tab=$item[0]&$item[1]' %s>$item[2]</a></li>", $_GET['tab'] == $item[0] ? 'class="current"' : '');
@@ -556,7 +569,7 @@ class Ucenter_Integration {
 			case '':
 				$_GET['pageid'] =  max( 1, intval( $_GET['pageid'] ) );
 				$_GET['filter'] = !empty( $_GET['filter'] ) ? $_GET['filter'] : '';
-				
+
 				$data = uc_pm_list( $uid, $_GET['pageid'], $pm_per_page, $_GET['folder'], $_GET['filter'], $max_msg_length );
 
 				foreach ( $data['data'] as $pm ) {
@@ -567,10 +580,10 @@ class Ucenter_Integration {
 						$output .= "<li><a href='$current_handler&action=view&subtab=within3days&daterange=3&touid=$pm[touid]'>[$pm[msgfrom]]</a> (" . gmdate( 'Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ')';
 						$pm['new'] && $output .= " New! ";
 						$output .= '<br /> ' . __( 'Content: ', 'ucenter' ) . $pm[message] . '</li>';
-					}			
+					}
 				}
-				
-				$page_n = $data['count'] / $pm_per_page; 
+
+				$page_n = $data['count'] / $pm_per_page;
 				if ( $page_n > 1 ) {
 					$output .= '<hr / ><br />';
 					$output .= __( 'Page ', 'ucenter' );
@@ -583,7 +596,7 @@ class Ucenter_Integration {
 				$pmid = !empty( $_GET['pmid'] ) ? $_GET['pmid'] : '';
 				$daterange = !empty( $_GET['daterange'] ) ? $_GET['daterange'] : '1';
 				$data = uc_pm_view( $uid, $pmid, $_GET['touid'], $daterange );
-				
+
 
 				$dateranges = array(
 					array( 'within3days', '3', __( 'Within 3 Days', 'ucenter' ) ),
@@ -605,7 +618,7 @@ class Ucenter_Integration {
 					$output .= ' ( ' . gmdate('Y-m-d H:i:s', $pm['dateline'] + $timeoffset * 3600 ) . ' ) ';
 					$output .= "<br />$pm[message]<br /><br />";
 				}
-				
+
 				if ( empty( $_GET['pmid'] ) ) {
 					$output .= "
 						<a href='$current_handler&action=delete&uid=$_GET[touid]'>" . __( 'Delete All Message From This user', 'ucenter' ) . "</a><br />
@@ -689,7 +702,7 @@ class Ucenter_Integration {
 		$handler = $_SERVER['PHP_SELF'] . '?page=' . $_GET['page'];
 		$action = !empty( $_GET['action'] ) ? $_GET['action'] : 'view';
 		$_GET['tab'] = !empty($_GET['tab']) ? $_GET['tab'] : 'friend';
-		
+
 		$menu = array(
 			array( 'friend', '', __( 'Friend', 'ucenter' ) ),
 			array( 'focus', '', __( 'Focus', 'ucenter' ) ),
@@ -721,7 +734,7 @@ class Ucenter_Integration {
 					if ( uc_friend_add( $uid, $friendid[0], $_POST['newcomment'] ) )
 						echo $_POST['newfriend'] . __( ' has been added to your list!', 'ucenter' ) . '<br /><br />';
 				}
-				
+
 				echo "<form method='post' action='$handler&action=add&tab=$_GET[tab]'>
 					<table>
 						<tr><td>" . __( 'Add Friend', 'ucenter' ) . '</td><td><input name="newfriend"></td></tr>
@@ -733,7 +746,7 @@ class Ucenter_Integration {
 			case 'delete':
 				if ( !is_array( $_GET['delete'] ) ) {
 					$_GET['delete'] = array( $_GET['delete'] );
-				}	 
+				}
 				if( !empty( $_GET['delete'] ) ) {
 					if( uc_friend_delete( $uid, $_GET['delete'] ) )
 						echo __( 'Removed!', 'ucenter' );
@@ -747,7 +760,7 @@ class Ucenter_Integration {
 		$plugin_dir = basename( dirname( __FILE__ ) );
 		echo '<div class="wrap">';
 		echo '<h2>' . __( 'Ucenter Introduction', 'ucenter' ) . '</h2>';
-		_e( '<p>Ucenter Integration Plugin will help you integrate wordpress with ucenter supported platforms. If you find any bug, please email to nkucyd at gmail.com. Your help is appreciated. </p>', 'ucenter' );
+		_e( '<p>Ucenter Integration Plugin will help you integrate wordpress with ucenter supported platforms. If you find any bug, please email to nkucyd at gmail.com. Your help is appreciated. <br /> <a href="http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/" target="_blank">http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/</a> </p>', 'ucenter' );
 		_e( 'You should follow there steps to make plugin work well:', 'ucenter' );
 		printf( __( "<br>1. Login ucenter to add wordpress as app. NOTICE: you should fill APP'S URL with http://yourdomain/wp-content/plugins/%s<br>", 'ucenter' ), $plugin_dir );
 		_e( '2. Finish define setting accoding to ucenter.<br>', 'ucenter' );
@@ -805,7 +818,7 @@ class Ucenter_Integration {
 	}
 
 	function submenu_integration_settings() {
-		$page_options = 'ucenter_password_override,ucenter_hack_core,ucenter_credit_name,ucenter_credit_unit,ucenter_credit_per_comment,ucenter_credit_per_post,ucenter_enable_mail_box,ucenter_enable_customize_icon,ucenter_enable_friend,ucenter_enable_credit';
+		$page_options = 'ucenter_password_override,ucenter_credit_name,ucenter_credit_unit,ucenter_credit_per_comment,ucenter_credit_per_post,ucenter_enable_mail_box,ucenter_enable_customize_icon,ucenter_enable_friend,ucenter_enable_credit';
 		$options = get_option( UCENTER_INTEGRATION_SETTING_NAME );
 
 		if ( $_POST['page_options'] )
@@ -816,12 +829,6 @@ class Ucenter_Integration {
 				$post_option = trim( $post_option );
 				$value = isset( $_POST[$post_option] ) ? trim( $_POST[$post_option] ) : false;
 				$options[$post_option] = $value;
-				if ( $post_option == 'ucenter_hack_core' ) {
-					if ( $value )
-						$this->hack_core();
-					else
-						$this->hack_core( 'remove' );
-				}
 			}
 			update_option( UCENTER_INTEGRATION_SETTING_NAME, $options );
 	?>
@@ -842,12 +849,6 @@ class Ucenter_Integration {
 			<tr><td></td><td><?php _e( '<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, user\'s password in ucenter will override that in wordpress when encounter pair(user, password) confliction between ucenter and wordpress. If disable this option, confliction will make login fail.<strong><br >WARNINGS: OPERATION WHEN YOU CLEARLY UNDERSTAND ITS MEANING!</strong>', 'ucenter' ) ?></td></tr>
 
 			<tr>
-				<td><?php _e( 'Hack Core', 'ucenter' ) ?></td>
-				<td><input type="checkbox" name="ucenter_hack_core" value="1" <?php checked( '1', $options['ucenter_hack_core'] ); ?> /></td>
-			</tr>
-			<tr><td></td><td><?php printf( __( '<strong>RECOMMENDATION: Enable This Option.</strong> If enable this option, ucenter integration plugin will hack wp core file "%s" to add some filter that isn\'t supplied by offical wp in order to make plugin work with entire functions. If disable this option, changes of user infomation will not go into ucenter when register/add/edit user in wordpress.', 'ucenter' ), ABSPATH . WPINC . '/registration.php' ) ?></td></tr>
-
-			<tr>
 				<td><?php _e( 'Credit Name', 'ucenter' ) ?></td>
 				<td><input type="text" name="ucenter_credit_name" value="<?php echo $options['ucenter_credit_name']; ?>"/></td>
 			</tr>
@@ -855,13 +856,13 @@ class Ucenter_Integration {
 
 			<tr>
 				<td><?php _e( 'Credit Unit', 'ucenter' ) ?></td>
-				<td><input type="test" name="ucenter_credit_unit" value="<?php echo $options['ucenter_credit_unit']; ?>"/></td>
+				<td><input type="text" name="ucenter_credit_unit" value="<?php echo $options['ucenter_credit_unit']; ?>"/></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
 			<tr>
 				<td><?php _e( 'Credit Per Comment', 'ucenter' ) ?></td>
-				<td><input type="test" name="ucenter_credit_per_comment" value="<?php echo $options['ucenter_credit_per_comment']; ?>"/></td>
+				<td><input type="text" name="ucenter_credit_per_comment" value="<?php echo $options['ucenter_credit_per_comment']; ?>"/></td>
 			</tr>
 			<tr><td></td><td></td></tr>
 
