@@ -24,6 +24,7 @@ BTW, After enabling msg, avatar, credit, friends component, you can send msg, ch
 That will be very cool for wordpress and discuz fans.
 
 Plugin has been tested in 3.2.1 without multi site.
+Donate: http://chenyundong.com/?p=368
 
 == Installation ==
 

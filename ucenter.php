@@ -7,7 +7,7 @@
 /*
 Plugin Name: Ucenter
 Plugin URI: http://chenyundong.com
-Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3. If you want a supported version with beauty UI and more functions, please purchase charged version. See detailed information on my blog: <a href="http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/">http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/</a>
+Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3. If you want a supported version with beauty UI and more functions, please purchase charged version. See detailed information on my blog: <a href="http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/">http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/</a>. Donate: <a href="http://chenyundong.com/?p=368">http://chenyundong.com/?p=368</a>
 Author: ychen
 Version: 0.3.4
 Author URI: http://chenyundong.com
