@@ -3,8 +3,8 @@ Contributors: ychen
 Donate link: http://chenyundong.com/
 Tags: plugin, ucenter, integration
 Requires at least: 2.9
-Tested up to: 3.0.1
-Stable tag: 0.3.3
+Tested up to: 3.2.1
+Stable tag: 0.3.4
 
 Integrate wordpress with ucenter, which will make wordpress work with ucenter supported platform.
 
@@ -23,7 +23,7 @@ After installation, wordpress will act like this:
 BTW, After enabling msg, avatar, credit, friends component, you can send msg, change avatar, exchange credits and add friends in wordpress.
 That will be very cool for wordpress and discuz fans.
 
-Plugin has been tested in 3.0 without multi site.
+Plugin has been tested in 3.2.1 without multi site.
 
 == Installation ==
 
@@ -41,10 +41,6 @@ enter ucenter integration plugin dir, remove config.php and login dashboard to r
 
 enter plugin dir, remove ucenter-integration and reinstanll this plugin.
 
-= UI is so ugly. where could I get a more beauty version with more funtions?
-
-visit http://chenyundong.com and I have prepared a charged version for this. :)
-
 == Screenshots ==
 
 1. setting
@@ -54,12 +50,18 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 5. avatar component
 
 == Changelog ==
+= 0.3.4 =
+> fix error discard when update user
+> fix some typos
+> remove core hack part
+> support chinese login name
+
 = 0.3.3 =
-> fix sending chars before sending header bug  
+> fix sending chars before sending header bug
 > fix activated_plugin hook
 
 = 0.3.2 =
-> fix sending chars before sending header bug  
+> fix sending chars before sending header bug
 > fix permission deny bug
 
 = 0.3.1 =
@@ -69,22 +71,18 @@ visit http://chenyundong.com and I have prepared a charged version for this. :)
 > fix bugs
 
 = 0.2 =
-> Fix some bugs  
-> add mail box  
-> add customize icon  
-> add friend  
-> add credit  
+> Fix some bugs
+> add mail box
+> add customize icon
+> add friend
+> add credit
 
 = 0.1 =
-> First version  
-> User can synlogin all apps that has been integrated into ucenter  
-> When user login other apps that has been integrated into ucenter, user will auto login wordpress  
-> When user does not exists in ucenter, user will be auto registered in ucenter when user login wordpress  
+> First version
+> User can synlogin all apps that has been integrated into ucenter
+> When user login other apps that has been integrated into ucenter, user will auto login wordpress
+> When user does not exists in ucenter, user will be auto registered in ucenter when user login wordpress
 
 == Upgrade Notice ==
-
-= 0.3 =
-last maintained free version. If you want a beauty version with more functions, please visit http://chenyundong.com to get detailed information.
-
 = 0.1 =
 First release. No need to upgrade.
