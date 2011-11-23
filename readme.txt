@@ -4,7 +4,7 @@ Donate link: http://chenyundong.com/
 Tags: plugin, ucenter, integration
 Requires at least: 2.9
 Tested up to: 3.2.1
-Stable tag: 0.3.4
+Stable tag: 0.3.5
 
 Integrate wordpress with ucenter, which will make wordpress work with ucenter supported platform.
 
@@ -23,7 +23,8 @@ After installation, wordpress will act like this:
 BTW, After enabling msg, avatar, credit, friends component, you can send msg, change avatar, exchange credits and add friends in wordpress.
 That will be very cool for wordpress and discuz fans.
 
-Plugin has been tested in 3.2.1 without multi site.
+Plugin has been tested in 3.2.1 without multi site.  
+Upgrade UC client to 1.6.0  
 Donate: http://chenyundong.com/?p=368
 
 == Installation ==
@@ -51,18 +52,19 @@ enter plugin dir, remove ucenter-integration and reinstanll this plugin.
 5. avatar component
 
 == Changelog ==
+
 = 0.3.4 =
-> fix error discard when update user
-> fix some typos
-> remove core hack part
-> support chinese login name
+> fix error discard when update user  
+> fix some typos  
+> remove core hack part  
+> support chinese login name  
 
 = 0.3.3 =
-> fix sending chars before sending header bug
+> fix sending chars before sending header bug  
 > fix activated_plugin hook
 
 = 0.3.2 =
-> fix sending chars before sending header bug
+> fix sending chars before sending header bug  
 > fix permission deny bug
 
 = 0.3.1 =
@@ -72,18 +74,19 @@ enter plugin dir, remove ucenter-integration and reinstanll this plugin.
 > fix bugs
 
 = 0.2 =
-> Fix some bugs
-> add mail box
-> add customize icon
-> add friend
+> Fix some bugs  
+> add mail box  
+> add customize icon  
+> add friend  
 > add credit
 
 = 0.1 =
-> First version
-> User can synlogin all apps that has been integrated into ucenter
-> When user login other apps that has been integrated into ucenter, user will auto login wordpress
+> First version  
+> User can synlogin all apps that has been integrated into ucenter  
+> When user login other apps that has been integrated into ucenter, user will auto login wordpress  
 > When user does not exists in ucenter, user will be auto registered in ucenter when user login wordpress
 
 == Upgrade Notice ==
+
 = 0.1 =
-First release. No need to upgrade.
+> First release. No need to upgrade

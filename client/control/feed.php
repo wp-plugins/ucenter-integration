@@ -1,10 +1,10 @@
 <?php
 
 /*
-	[UCenter] (C)2001-2009 Comsenz Inc.
+	[UCenter] (C)2001-2099 Comsenz Inc.
 	This is NOT a freeware, use is subject to license terms
 
-	$Id: feed.php 846 2008-12-08 05:37:05Z zhaoxiongfei $
+	$Id: feed.php 1059 2011-03-01 07:25:09Z monkey $
 */
 
 !defined('IN_UC') && exit('Access Denied');
@@ -53,7 +53,6 @@ class feedcontrol extends base {
 		return $this->db->insert_id();
 	}
 
-	//note private 删除事件
 	function ondelete() {
 		$start = $this->input('start');
 		$limit = $this->input('limit');
@@ -61,25 +60,21 @@ class feedcontrol extends base {
 		$this->db->query("DELETE FROM ".UC_DBTABLEPRE."feeds WHERE feedid>'$start' AND feedid<'$end'");
 	}
 
-	//note public 取得事件的接口, 取完以后是否删除?
 	function onget() {
 		$this->load('misc');
 		$limit = intval($this->input('limit'));
 		$delete = $this->input('delete');
 		$feedlist = $this->db->fetch_all("SELECT * FROM ".UC_DBTABLEPRE."feeds ORDER BY feedid DESC LIMIT $limit");
 		if($feedlist) {
+			$maxfeedid = $feedlist[0]['feedid'];
 			foreach($feedlist as $key => $feed) {
 				$feed['body_data'] = $_ENV['misc']->string2array($feed['body_data']);
 				$feed['title_data'] = $_ENV['misc']->string2array($feed['title_data']);
 				$feedlist[$key] = $feed;
 			}
 		}
-		//note 删除过期的feed
 		if(!empty($feedlist)) {
-			$maxfeed = array_pop($feedlist);
-			$maxfeedid = $maxfeed['feedid'];
-			$feedlist = array_merge($feedlist, array($maxfeed));
-			if($delete) {
+			if(!isset($delete) || $delete) {
 				$this->_delete(0, $maxfeedid);
 			}
 		}
