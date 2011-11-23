@@ -2,14 +2,14 @@
 /**
  * @package Ucenter
  * @author ychen
- * @version 0.3
+ * @version 0.3.5
  */
 /*
 Plugin Name: Ucenter
 Plugin URI: http://chenyundong.com
-Description: This plugin integrate wordpress into ucenter and make wordpress can work with ucenter supported platforms. Free version will stop maintaining since 0.3. If you want a supported version with beauty UI and more functions, please purchase charged version. See detailed information on my blog: <a href="http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/">http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/</a>. Donate: <a href="http://chenyundong.com/?p=368">http://chenyundong.com/?p=368</a>
+Description: 该插件可以把Wordpress集成到Ucenter当中以使Wordpress可以和Ucenter支持的平台协同工作。使用介绍：<a href="http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/">http://chenyundong.com/2010/04/wordpress-plugin-ucenter-integration-使用介绍/</a> 免费版本从0.3.5版本停止维护。从0.3.5以后，来自Wordpress官网的任何更新仅仅是一个通知，除了提示有新版本之外没有任何代码的更新。如果你需要一个更多功能更好UI的支持版本，请购买收费版本。有关免费版捐赠以及收费版购买，请见: <a href="http://chenyundong.com/?p=368">http://chenyundong.com/?p=368</a>
 Author: ychen
-Version: 0.3.4
+Version: 0.3.5
 Author URI: http://chenyundong.com
 */
 
