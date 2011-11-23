@@ -53,6 +53,10 @@ enter plugin dir, remove ucenter-integration and reinstanll this plugin.
 
 == Changelog ==
 
+= 0.3.5 =
+> upgrade uc client to 1.6.0  
+> fix MailBox no table bug
+
 = 0.3.4 =
 > fix error discard when update user  
 > fix some typos  
