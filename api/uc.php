@@ -20,7 +20,6 @@ define( 'API_RETURN_FORBIDDEN', '-2' );
 define( 'UCENTER_INTEGRATION_SETTING_NAME', 'plugin_ucenter_integration_settings' );
 
 error_reporting(0);
-set_magic_quotes_runtime(0);
 
 function debug( $s ) {
 	$logfile = dirname( __FILE__ ) . '/api.log';
